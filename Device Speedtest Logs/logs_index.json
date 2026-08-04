@@ -1,0 +1,23 @@
+﻿[
+    {
+        "device":  "CoreRouter",
+        "timestamp":  "2026-08-03 16:51:35",
+        "speed_mbps":  472,
+        "unit":  "Mbps",
+        "target":  "Manila Cloudflare CDN"
+    },
+    {
+        "device":  "CoreRouter",
+        "timestamp":  "2026-08-03 16:48:00",
+        "speed_mbps":  472,
+        "unit":  "Mbps",
+        "target":  "Manila Cloudflare CDN"
+    },
+    {
+        "device":  "HomeMikro",
+        "timestamp":  "2026-08-03 16:51:37",
+        "speed_mbps":  468,
+        "unit":  "Mbps",
+        "target":  "Manila Cloudflare CDN"
+    }
+]

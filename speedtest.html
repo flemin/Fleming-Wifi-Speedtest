@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MikroTik 5-Min Speedtest Logs Monitor | Internet Business</title>
+  <meta name="description" content="Real-time continuous 5-minute speedtest log monitoring for CoreRouter and HomeMikro devices with calendar navigation, 7-day 30-min averages, and dynamic speed color coding.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="speedtest.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    
+    <!-- Top Navigation Header -->
+    <header class="top-nav">
+      <div class="nav-brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">
+          <h1>MikroTik Speedtest Monitor</h1>
+          <p>Continuous 5-Minute Log Analytics &amp; Dual-Device Performance Tracker</p>
+        </div>
+      </div>
+      
+      <div class="nav-status">
+        <div class="status-pill">
+          <span class="pulse-dot"></span>
+          <span>Live 5-Min Logging Active</span>
+        </div>
+        <a href="index.html" class="btn-nav">← Back to Overview</a>
+      </div>
+    </header>
+
+    <!-- Top Grid: Graphical Calendar + 7-Day Chart -->
+    <section class="top-grid">
+      
+      <!-- Graphical Calendar & Day Navigator Card -->
+      <div class="glass-card calendar-card">
+        <div class="card-title">
+          <span>📅</span> Date Navigator &amp; Calendar
+        </div>
+        
+        <div class="calendar-controls">
+          <button class="btn-icon" id="prevMonthBtn" title="Previous Month">◄</button>
+          <div class="calendar-month-year" id="calMonthYear">August 2026</div>
+          <button class="btn-icon" id="nextMonthBtn" title="Next Month">►</button>
+        </div>
+        
+        <div class="quick-days">
+          <button class="btn-pill" id="btnPrevDay">◄ Prev Day</button>
+          <button class="btn-pill active" id="btnToday">Today</button>
+          <button class="btn-pill" id="btnYesterday">Yesterday</button>
+          <button class="btn-pill" id="btnNextDay">Next Day ►</button>
+        </div>
+        
+        <div class="calendar-grid" id="calGrid">
+          <!-- Calendar Days JS Rendered Here -->
+        </div>
+        
+        <div class="selected-day-badge" id="selectedDayText">
+          Loading selected date...
+        </div>
+      </div>
+
+      <!-- Last 7 Days (30-Min Increments) Speed Graph Card -->
+      <div class="glass-card chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="card-title">
+              <span>📈</span> Last 7 Days Average Speed Trend
+            </div>
+            <div class="chart-subtitle">Aggregated in 30-minute increments across 7 days total (336 data points)</div>
+          </div>
+        </div>
+        
+        <div class="chart-wrapper">
+          <canvas id="speedTrendChart"></canvas>
+        </div>
+      </div>
+      
+    </section>
+
+    <!-- Middle Section: 7-Day Executive Analysis & Metrics -->
+    <section class="metrics-section">
+      <div class="glass-card">
+        <div class="card-title" style="margin-bottom: 0.85rem;">
+          <span>📊</span> 7-Day Executive Summary &amp; SLA Performance Analysis
+        </div>
+        
+        <div class="metrics-grid">
+          
+          <!-- Metric 1: Average Speed -->
+          <div class="metric-card">
+            <div class="metric-icon-box icon-avg">⚡</div>
+            <div class="metric-info">
+              <span class="metric-label">7-Day Average Speed</span>
+              <span class="metric-value" id="metricAvgSpeed">--- Mbps</span>
+              <span class="metric-sub">Across all 5-minute tests</span>
+            </div>
+          </div>
+
+          <!-- Metric 2: Slow Speeds (< 200 MBPS) -->
+          <div class="metric-card">
+            <div class="metric-icon-box icon-slow">⚠️</div>
+            <div class="metric-info">
+              <span class="metric-label">Slow Speeds (&lt; 200 Mbps)</span>
+              <span class="metric-value" id="metricSlowSpeed">0.0 hrs</span>
+              <span class="metric-sub">Duration below 200 Mbps threshold</span>
+            </div>
+          </div>
+
+          <!-- Metric 3: Outage Tracker (0 MBPS) -->
+          <div class="metric-card">
+            <div class="metric-icon-box icon-outage">🚨</div>
+            <div class="metric-info">
+              <span class="metric-label">Outage Duration (0 Mbps)</span>
+              <span class="metric-value" id="metricOutage">0 mins</span>
+              <span class="metric-sub">Complete throughput loss events</span>
+            </div>
+          </div>
+
+          <!-- Metric 4: Service Compliance Ratio -->
+          <div class="metric-card">
+            <div class="metric-icon-box icon-uptime">🛡️</div>
+            <div class="metric-info" style="width: 100%;">
+              <span class="metric-label">Uptime Compliance (≥ 200 Mbps)</span>
+              <span class="metric-value" id="metricCompliance">100%</span>
+              <div class="compliance-bar-container">
+                <div class="compliance-bar-fill" id="metricComplianceFill" style="width: 100%;"></div>
+              </div>
+              <span class="metric-sub" id="metricComplianceSub">100% ≥ 200Mbps | 0% &lt; 200Mbps</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Legend Box & Speed Scale Explanation -->
+    <div class="legend-card">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <strong style="color: #ffffff;">Color Coding Legend:</strong>
+        <span>Dynamic HSL Speed Scale based on 200 Mbps threshold</span>
+      </div>
+      
+      <div class="legend-scale">
+        <span>0 Mbps</span>
+        <div class="gradient-bar red-scale" title="Under 200 MBPS: More Red closer to 0, Muted Red near 200"></div>
+        <span style="color: #ef4444; font-weight: 600;">&lt; 200 Mbps (Red)</span>
+        
+        <span style="margin-left: 1rem;">200 Mbps</span>
+        <div class="gradient-bar green-scale" title="200 MBPS and above: Muted Green near 200, Lush Emerald Green closer to 1 Gbps"></div>
+        <span style="color: #34d399; font-weight: 600;">≥ 200 Mbps (Green)</span>
+        <span>1 Gbps</span>
+      </div>
+    </div>
+
+    <!-- Dual Tables Section: CoreRouter & HomeMikro -->
+    <section class="tables-section">
+      
+      <div class="tables-header">
+        <div class="card-title">
+          <span>📋</span> Dual Synchronized Speedtest Log Tables (5-Min Intervals)
+        </div>
+        <div class="sync-badge">
+          <span>🔗</span> Synchronized Table Scroll Enabled
+        </div>
+      </div>
+
+      <div class="tables-grid">
+        
+        <!-- Table 1: CoreRouter -->
+        <div class="glass-card table-panel">
+          <div class="device-header">
+            <div class="device-title-box">
+              <span class="device-chip chip-core">CoreRouter</span>
+              <strong style="font-size: 0.95rem;">Core Network Router Speed Logs</strong>
+            </div>
+          </div>
+          
+          <div class="table-scroll-container" id="scrollContainerCore">
+            <table class="log-table">
+              <thead>
+                <tr>
+                  <th>Timestamp (Human Readable)</th>
+                  <th>Speed (Mbps)</th>
+                  <th>Target Server</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyCoreRouter">
+                <!-- Log Rows JS Rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Table 2: HomeMikro -->
+        <div class="glass-card table-panel">
+          <div class="device-header">
+            <div class="device-title-box">
+              <span class="device-chip chip-home">HomeMikro</span>
+              <strong style="font-size: 0.95rem;">Home MikroTik Speed &amp; Backbone Logs</strong>
+            </div>
+          </div>
+          
+          <div class="table-scroll-container" id="scrollContainerHome">
+            <table class="log-table">
+              <thead>
+                <tr>
+                  <th>Timestamp (Human Readable)</th>
+                  <th>Speed (Mbps)</th>
+                  <th>Target / Backbone Test</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyHomeMikro">
+                <!-- Log Rows JS Rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Dashboard JavaScript -->
+  <script src="speedtest.js"></script>
+</body>
+</html>
