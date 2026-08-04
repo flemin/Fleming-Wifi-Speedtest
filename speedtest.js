@@ -1,6 +1,6 @@
 // MikroTik Speedtest Dashboard Engine - Strict Authentic Logs Mode (No Filler Data)
 
-let selectedDate = new Date(2026, 7, 3); // Default Aug 3, 2026
+let selectedDate = new Date(); // Default to Today
 let calendarCurrentMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
 
 let coreRouterLogs = [];
@@ -14,6 +14,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderCalendar();
   updateDashboard();
   setupSynchronizedScrolling();
+
+  // Auto refresh log data every 15 seconds
+  setInterval(async () => {
+    await loadRealLogData();
+    updateDashboard();
+  }, 15000);
 });
 
 // Setup Control Event Listeners
@@ -29,7 +35,7 @@ function setupEventListeners() {
   });
   
   document.getElementById('btnToday').addEventListener('click', () => {
-    selectedDate = new Date(2026, 7, 3);
+    selectedDate = new Date();
     calendarCurrentMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
     renderCalendar();
     updateDashboard();
@@ -93,38 +99,52 @@ async function loadRealLogData() {
 
   let fetchedLogs = [];
 
-  // Try 1: Fetch local logs_index.json or direct log files
+  // Try 1: Fetch static latest.json files from GitHub Pages CDN (Instant, 0 Rate Limit)
   try {
-    const res = await fetch('Device Speedtest Logs/logs_index.json');
-    if (res.ok) {
-      fetchedLogs = await res.json();
+    const cb = Date.now();
+    const [resCore, resHome] = await Promise.all([
+      fetch(`Device Speedtest Logs/CoreRouter/latest.json?t=${cb}`),
+      fetch(`Device Speedtest Logs/HomeMikro/latest.json?t=${cb}`)
+    ]);
+    if (resCore.ok) {
+      const dataCore = await resCore.json();
+      fetchedLogs.push(dataCore);
+    }
+    if (resHome.ok) {
+      const dataHome = await resHome.json();
+      fetchedLogs.push(dataHome);
     }
   } catch (err) {
-    console.warn("Could not fetch local logs_index.json, trying GitHub API...", err);
+    console.warn("Could not fetch relative latest.json, falling back to GitHub API...", err);
   }
 
-  // Try 2: Fetch via GitHub API if logs_index.json didn't yield results
-  if (!fetchedLogs || fetchedLogs.length === 0) {
-    fetchedLogs = await fetchFromGitHubAPI();
-  }
-
-  // Fallback to hardcoded known pushed log entries if network/API is offline
-  if (!fetchedLogs || fetchedLogs.length === 0) {
-    fetchedLogs = [
-      { device: 'CoreRouter', timestamp: '2026-08-03 16:48:00', speed_mbps: 472, unit: 'Mbps', target: 'Manila Cloudflare CDN' },
-      { device: 'CoreRouter', timestamp: '2026-08-03 16:51:35', speed_mbps: 472, unit: 'Mbps', target: 'Manila Cloudflare CDN' },
-      { device: 'HomeMikro', timestamp: '2026-08-03 16:51:37', speed_mbps: 468, unit: 'Mbps', target: 'Manila Cloudflare CDN' }
-    ];
+  // Try 2: Fetch full historical log files via GitHub API if available
+  try {
+    const apiLogs = await fetchFromGitHubAPI();
+    if (apiLogs && apiLogs.length > 0) {
+      // Merge unique entries by timestamp/device
+      const existingKeys = new Set(fetchedLogs.map(l => `${l.device}_${l.date}_${l.time}`));
+      apiLogs.forEach(item => {
+        const key = `${item.device}_${item.date}_${item.time}`;
+        if (!existingKeys.has(key)) {
+          fetchedLogs.push(item);
+          existingKeys.add(key);
+        }
+      });
+    }
+  } catch (err) {
+    console.warn("GitHub API fetch fallback warning:", err);
   }
 
   // Parse and separate strictly authentic logs
   fetchedLogs.forEach(entry => {
-    const dateObj = parseTimestamp(entry.timestamp);
+    const rawTs = entry.timestamp || (entry.date && entry.time ? `${entry.date} ${entry.time}` : null);
+    const dateObj = parseTimestamp(rawTs);
     const item = {
       device: entry.device,
-      timestamp: entry.timestamp,
+      timestamp: rawTs || entry.timestamp,
       dateObj: dateObj,
-      speed_mbps: Number(entry.speed_mbps),
+      speed_mbps: Number(entry.speed_mbps) || 0,
       unit: entry.unit || 'Mbps',
       target: entry.target || 'Manila Cloudflare CDN'
     };
@@ -261,7 +281,7 @@ function renderCalendar() {
   }
   
   // Current Month Days
-  const today = new Date(2026, 7, 3);
+  const today = new Date();
   for (let day = 1; day <= totalDaysInMonth; day++) {
     const cell = document.createElement('div');
     cell.className = 'cal-day-cell';
