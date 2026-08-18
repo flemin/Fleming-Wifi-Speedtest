@@ -1,4 +1,4 @@
-// Fleming WiFi Speedtest Dashboard Engine - Ultra-Fast Async Logs Engine
+// Fleming WiFi Speedtest Dashboard Engine - Enhanced Features Edition
 
 let selectedDate = new Date();
 let calendarCurrentMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
@@ -158,6 +158,8 @@ function insertLogEntry(entry) {
     dateObj: dateObj,
     speed_mbps: Number(entry.speed_mbps) || 0,
     unit: entry.unit || 'Mbps',
+    ping_ms: Number(entry.ping_ms) || (entry.device === 'CoreRouter' ? 18 : 1),
+    packet_loss: Number(entry.packet_loss) || 0,
     target: entry.target || (entry.device === 'CoreRouter' ? 'Manila Cloudflare CDN' : 'Backbone Transit')
   };
 
@@ -175,7 +177,6 @@ async function loadHistoricalDataAsync() {
   const repoName = 'Fleming-Wifi-Speedtest';
   const devices = ['CoreRouter', 'HomeMikro'];
 
-  // Check sessionStorage cache first for instant repeat visits
   const cacheKey = 'fleming_speedtest_logs_v1';
   const cached = sessionStorage.getItem(cacheKey);
   if (cached) {
@@ -187,7 +188,6 @@ async function loadHistoricalDataAsync() {
     } catch {}
   }
 
-  // Fetch directory listings in parallel
   const fetchPromises = devices.map(async (dev) => {
     try {
       const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/Device%20Speedtest%20Logs/${dev}`;
@@ -197,10 +197,8 @@ async function loadHistoricalDataAsync() {
       const files = await res.json();
       if (!Array.isArray(files)) return [];
 
-      // Filter only recent .json logs (limit to the 30 most recent files per device for max speed)
       const jsonFiles = files.filter(f => f.name.endsWith('.json') && !f.name.includes('test')).slice(-30);
 
-      // Fetch all JSON files in parallel batches
       const fileContents = await Promise.all(
         jsonFiles.map(async (file) => {
           try {
@@ -222,7 +220,6 @@ async function loadHistoricalDataAsync() {
   const allFetched = results.flat();
   allFetched.forEach(insertLogEntry);
 
-  // Save to session cache
   try {
     sessionStorage.setItem(cacheKey, JSON.stringify([...coreRouterLogs, ...homeMikroLogs]));
   } catch {}
@@ -235,7 +232,6 @@ function parseTimestamp(tsStr) {
   return isNaN(d.getTime()) ? new Date() : d;
 }
 
-// Format relative time (e.g. "3 mins ago")
 function formatRelativeTime(dateObj) {
   const now = new Date();
   const diffMs = now - dateObj;
@@ -249,7 +245,6 @@ function formatRelativeTime(dateObj) {
   return dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-// Human readable timestamp formatting
 function formatHumanReadableTime(dateObj) {
   return dateObj.toLocaleDateString('en-US', {
     month: 'short',
@@ -263,7 +258,6 @@ function formatHumanReadableTime(dateObj) {
   });
 }
 
-// Dynamic HSL Speed Color Generator
 function getSpeedColorStyle(speed) {
   if (speed < 200) {
     const ratio = Math.max(0, Math.min(1, speed / 200));
@@ -301,7 +295,6 @@ function renderCalendar() {
   monthTitle.innerText = `${monthNames[calendarCurrentMonth.getMonth()]} ${calendarCurrentMonth.getFullYear()}`;
   grid.innerHTML = '';
   
-  // Day Headers
   const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   daysOfWeek.forEach(day => {
     const header = document.createElement('div');
@@ -317,7 +310,6 @@ function renderCalendar() {
   const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
   const prevMonthDays = new Date(year, month, 0).getDate();
   
-  // Prev Month Lead-in Days
   for (let i = firstDayIndex - 1; i >= 0; i--) {
     const cell = document.createElement('div');
     cell.className = 'cal-day-cell other-month';
@@ -325,7 +317,6 @@ function renderCalendar() {
     grid.appendChild(cell);
   }
   
-  // Current Month Days
   const today = new Date();
   for (let day = 1; day <= totalDaysInMonth; day++) {
     const cell = document.createElement('div');
@@ -355,22 +346,22 @@ function renderCalendar() {
     grid.appendChild(cell);
   }
   
-  // Update Selected Day Label
   const selectedLabel = document.getElementById('selectedDayText');
   if (selectedLabel) {
     selectedLabel.innerText = `Selected: ${selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`;
   }
 }
 
-// Update Entire Dashboard Views
+// Update All Views
 function updateDashboard() {
   renderLiveGauges();
+  renderCongestionHeatmap();
   renderDualTables();
   render7DayMetrics();
   render30MinAverageChart();
 }
 
-// Render Live Speedometer Gauges
+// Render Live Speedometer Gauges with Latency Tracking
 function renderLiveGauges() {
   const arcLength = 210;
   
@@ -380,6 +371,16 @@ function renderLiveGauges() {
     document.getElementById('coreLiveSpeed').innerText = latestCore.speed_mbps;
     document.getElementById('coreLastTime').innerText = `${formatRelativeTime(latestCore.dateObj)} (${latestCore.dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})`;
     
+    const pingPill = document.getElementById('coreLatencyPill');
+    if (pingPill) {
+      pingPill.innerText = `⚡ ${latestCore.ping_ms} ms • ${latestCore.packet_loss}% Loss`;
+      if (latestCore.packet_loss > 0) {
+        pingPill.classList.add('loss');
+      } else {
+        pingPill.classList.remove('loss');
+      }
+    }
+
     const speedRatio = Math.min(1, Math.max(0, latestCore.speed_mbps / 600));
     const offset = arcLength - (speedRatio * arcLength);
     const arcElem = document.getElementById('coreGaugeArc');
@@ -395,6 +396,11 @@ function renderLiveGauges() {
     document.getElementById('homeLiveSpeed').innerText = latestHome.speed_mbps;
     document.getElementById('homeLastTime').innerText = `${formatRelativeTime(latestHome.dateObj)} (${latestHome.dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})`;
     
+    const homePingPill = document.getElementById('homeLatencyPill');
+    if (homePingPill) {
+      homePingPill.innerText = `⚡ ${latestHome.ping_ms} ms • ${latestHome.packet_loss}% Loss`;
+    }
+
     const speedRatio = Math.min(1, Math.max(0, latestHome.speed_mbps / 600));
     const offset = arcLength - (speedRatio * arcLength);
     const arcElem = document.getElementById('homeGaugeArc');
@@ -405,7 +411,59 @@ function renderLiveGauges() {
   }
 }
 
-// Render Side-by-Side Dual Tables for Selected Date
+// 24-Hour Congestion Heatmap Renderer
+function renderCongestionHeatmap() {
+  const container = document.getElementById('heatmapGrid');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const allLogs = coreRouterLogs.length > 0 ? coreRouterLogs : homeMikroLogs;
+  
+  // Group by hour 00..23
+  const hourlyData = Array(24).fill(null).map(() => []);
+  allLogs.forEach(l => {
+    const hr = l.dateObj.getHours();
+    hourlyData[hr].push(l.speed_mbps);
+  });
+
+  for (let hr = 0; hr < 24; hr++) {
+    const cell = document.createElement('div');
+    cell.className = 'heatmap-hour-cell';
+    
+    const speeds = hourlyData[hr];
+    const avg = speeds.length > 0 ? Math.round(speeds.reduce((a, b) => a + b, 0) / speeds.length) : null;
+    
+    const hrDisplay = hr === 0 ? '12A' : hr < 12 ? `${hr}A` : hr === 12 ? '12P' : `${hr-12}P`;
+    
+    let bg = 'rgba(255, 255, 255, 0.05)';
+    let text = '--';
+    let titleText = `Hour ${hr}:00: No test data recorded`;
+
+    if (avg !== null) {
+      text = `${avg}M`;
+      if (avg >= 200) {
+        bg = 'linear-gradient(180deg, #10b981, #059669)';
+        titleText = `Hour ${hr}:00 (${hrDisplay}): Avg ${avg} Mbps (Fast / Optimal)`;
+      } else if (avg >= 100) {
+        bg = 'linear-gradient(180deg, #f59e0b, #d97706)';
+        titleText = `Hour ${hr}:00 (${hrDisplay}): Avg ${avg} Mbps (Moderate Congestion)`;
+      } else {
+        bg = 'linear-gradient(180deg, #ef4444, #b91c1c)';
+        titleText = `Hour ${hr}:00 (${hrDisplay}): Avg ${avg} Mbps (Heavy Peak Throttle)`;
+      }
+    }
+
+    cell.title = titleText;
+    cell.innerHTML = `
+      <span class="heatmap-hour-label">${hrDisplay}</span>
+      <div class="heatmap-hour-bar" style="background: ${bg};">${text}</div>
+    `;
+
+    container.appendChild(cell);
+  }
+}
+
+// Side-by-Side Dual Tables
 function renderDualTables() {
   const tbodyCore = document.getElementById('tbodyCoreRouter');
   const tbodyHome = document.getElementById('tbodyHomeMikro');
@@ -430,7 +488,6 @@ function renderDualTables() {
     l.dateObj.getDate() === selDay
   ).sort((a, b) => b.dateObj - a.dateObj);
   
-  // Render CoreRouter Table Rows
   if (filteredCore.length === 0) {
     tbodyCore.innerHTML = `
       <tr>
@@ -458,7 +515,6 @@ function renderDualTables() {
     });
   }
   
-  // Render HomeMikro Table Rows
   if (filteredHome.length === 0) {
     tbodyHome.innerHTML = `
       <tr>
@@ -487,7 +543,7 @@ function renderDualTables() {
   }
 }
 
-// 7-Day SLA Metrics Analysis Box Renderer
+// 7-Day SLA Metrics
 function render7DayMetrics() {
   const allLogs = [...coreRouterLogs, ...homeMikroLogs];
   
@@ -524,7 +580,7 @@ function render7DayMetrics() {
   document.getElementById('metricComplianceSub').innerText = `${compliantPercent}% ≥ 200Mbps | ${slowPercent}% < 200Mbps (${allLogs.length} authentic tests recorded)`;
 }
 
-// 7-Day Speed Trend Chart (Strict 30-Minute Averages)
+// 7-Day Speed Trend Chart
 function render30MinAverageChart() {
   const canvas = document.getElementById('speedTrendChart');
   if (!canvas) return;
@@ -537,7 +593,6 @@ function render30MinAverageChart() {
     return;
   }
   
-  // Collect 30-minute time buckets across the last 7 days
   const labelsMap = new Map();
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
@@ -612,7 +667,7 @@ function render30MinAverageChart() {
       responsive: true,
       maintainAspectRatio: false,
       animation: {
-        duration: 400 // Fast snappier animation
+        duration: 400
       },
       interaction: {
         mode: 'index',
