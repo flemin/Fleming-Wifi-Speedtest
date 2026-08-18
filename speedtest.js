@@ -28,11 +28,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateDashboard();
   });
 
-  // Auto-refresh latest test data every 30 seconds
-  setInterval(async () => {
-    await loadInstantLatestData();
-    updateDashboard();
-  }, 30000);
+  // Register PWA Service Worker for Mobile / Offline support
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(err => {
+      console.log('SW registration note:', err);
+    });
+  }
 });
 
 // Setup Control Event Listeners
