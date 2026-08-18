@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Fleming WiFi | MikroTik Speedtest Analytics & Network Monitor</title>
   <meta name="description" content="Real-time continuous speedtest log monitoring for CoreRouter and HomeMikro devices with live gauge meters, 24-hour congestion heatmap, latency tracking, 7-day 30-min averages, and SLA tracking.">
   
@@ -41,9 +41,14 @@
       </div>
       
       <div class="nav-status">
+        <button class="install-btn" id="installPwaBtn" style="display: none;">
+          <span>📲</span>
+          <span>Install App</span>
+        </button>
+
         <div class="status-pill">
           <span class="pulse-dot"></span>
-          <span id="liveStatusText">Live Staggered Ingest Active</span>
+          <span id="liveStatusText">Live Ingest Active</span>
         </div>
       </div>
     </header>
@@ -159,10 +164,10 @@
         </div>
         
         <div class="quick-days">
-          <button class="btn-pill" id="btnPrevDay">◄ Prev Day</button>
+          <button class="btn-pill" id="btnPrevDay">◄ Prev</button>
           <button class="btn-pill active" id="btnToday">Today</button>
           <button class="btn-pill" id="btnYesterday">Yesterday</button>
-          <button class="btn-pill" id="btnNextDay">Next Day ►</button>
+          <button class="btn-pill" id="btnNextDay">Next ►</button>
         </div>
         
         <div class="calendar-grid" id="calGrid">
@@ -260,7 +265,7 @@
         <div class="gradient-bar red-scale" title="Under 200 MBPS: More Red closer to 0, Muted Red near 200"></div>
         <span style="color: #ef4444; font-weight: 600;">&lt; 200 Mbps (Red)</span>
         
-        <span style="margin-left: 1rem;">200 Mbps</span>
+        <span style="margin-left: 0.5rem;">200 Mbps</span>
         <div class="gradient-bar green-scale" title="200 MBPS and above: Muted Green near 200, Lush Emerald Green closer to 1 Gbps"></div>
         <span style="color: #34d399; font-weight: 600;">≥ 200 Mbps (Green)</span>
         <span>1 Gbps</span>
@@ -337,6 +342,6 @@
   </div>
 
   <!-- Dashboard JavaScript -->
-  <script src="speedtest.js?v=20260818_pwa"></script>
+  <script src="speedtest.js?v=20260818_mobile_fixed"></script>
 </body>
 </html>
