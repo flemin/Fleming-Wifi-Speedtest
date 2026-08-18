@@ -3,8 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MikroTik 5-Min Speedtest Logs Monitor | Internet Business</title>
-  <meta name="description" content="Real-time continuous 5-minute speedtest log monitoring for CoreRouter and HomeMikro devices with calendar navigation, 7-day 30-min averages, and dynamic speed color coding.">
+  <title>Fleming WiFi | MikroTik Speedtest Analytics & Network Monitor</title>
+  <meta name="description" content="Real-time continuous 5-minute speedtest log monitoring for CoreRouter and HomeMikro devices with live gauge meters, calendar navigation, 7-day 30-min averages, and SLA tracking.">
+  
+  <!-- Cache Control Meta Tags -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   
   <!-- CSS Stylesheets -->
   <link rel="stylesheet" href="speedtest.css">
@@ -21,19 +26,91 @@
       <div class="nav-brand">
         <div class="brand-icon">⚡</div>
         <div class="brand-text">
-          <h1>MikroTik Speedtest Monitor</h1>
-          <p>Continuous 5-Minute Log Analytics &amp; Dual-Device Performance Tracker</p>
+          <h1>Fleming WiFi Speedtest Monitor</h1>
+          <p>Continuous 5-Minute Dual-Device Performance Tracker &amp; SLA Monitor</p>
         </div>
       </div>
       
       <div class="nav-status">
         <div class="status-pill">
           <span class="pulse-dot"></span>
-          <span>Live 5-Min Logging Active</span>
+          <span id="liveStatusText">Live 5-Min Staggered Ingest Active</span>
         </div>
-        <a href="index.html" class="btn-nav">← Back to Overview</a>
       </div>
     </header>
+
+    <!-- Live Real-Time Gauge Meters Section -->
+    <section class="gauges-grid">
+      
+      <!-- CoreRouter Live Gauge Card -->
+      <div class="glass-card gauge-card core-gauge">
+        <div class="gauge-details">
+          <div class="gauge-header">
+            <span class="device-badge badge-core">CoreRouter</span>
+            <span class="gauge-title">ISP1 Direct WAN Throughput</span>
+          </div>
+          
+          <div class="gauge-speed-display">
+            <span class="gauge-speed-val" id="coreLiveSpeed">---</span>
+            <span class="gauge-speed-unit">Mbps</span>
+          </div>
+          
+          <div class="gauge-meta">
+            <div class="gauge-meta-item">
+              <span>🕒</span>
+              <span id="coreLastTime">Awaiting live test...</span>
+            </div>
+            <div class="gauge-meta-item">
+              <span>🌐</span>
+              <span id="coreTarget">Manila Cloudflare CDN</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="gauge-visual">
+          <svg class="gauge-svg" viewBox="0 0 140 110">
+            <!-- Background Arc: 200 deg sweep from 170 deg to 370/10 deg -->
+            <path class="gauge-bg-arc" d="M 20 95 A 50 50 0 1 1 120 95" />
+            <!-- Active Speed Arc -->
+            <path class="gauge-fill-arc" id="coreGaugeArc" stroke="#38bdf8" stroke-dasharray="210" stroke-dashoffset="210" d="M 20 95 A 50 50 0 1 1 120 95" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- HomeMikro Live Gauge Card -->
+      <div class="glass-card gauge-card home-gauge">
+        <div class="gauge-details">
+          <div class="gauge-header">
+            <span class="device-badge badge-home">HomeMikro</span>
+            <span class="gauge-title">Backbone Transit (VLAN 100)</span>
+          </div>
+          
+          <div class="gauge-speed-display">
+            <span class="gauge-speed-val" id="homeLiveSpeed">---</span>
+            <span class="gauge-speed-unit">Mbps</span>
+          </div>
+          
+          <div class="gauge-meta">
+            <div class="gauge-meta-item">
+              <span>🕒</span>
+              <span id="homeLastTime">Awaiting live test...</span>
+            </div>
+            <div class="gauge-meta-item">
+              <span>🌐</span>
+              <span id="homeTarget">Backbone Multi-Stream</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="gauge-visual">
+          <svg class="gauge-svg" viewBox="0 0 140 110">
+            <path class="gauge-bg-arc" d="M 20 95 A 50 50 0 1 1 120 95" />
+            <path class="gauge-fill-arc" id="homeGaugeArc" stroke="#c084fc" stroke-dasharray="210" stroke-dashoffset="210" d="M 20 95 A 50 50 0 1 1 120 95" />
+          </svg>
+        </div>
+      </div>
+
+    </section>
 
     <!-- Top Grid: Graphical Calendar + 7-Day Chart -->
     <section class="top-grid">
@@ -229,6 +306,6 @@
   </div>
 
   <!-- Dashboard JavaScript -->
-  <script src="speedtest.js"></script>
+  <script src="speedtest.js?v=20260818_1"></script>
 </body>
 </html>
