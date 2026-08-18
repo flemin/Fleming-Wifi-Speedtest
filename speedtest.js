@@ -1,16 +1,24 @@
-// MikroTik Speedtest Dashboard Engine - Strict Authentic Logs Mode (No Filler Data)
+// Fleming WiFi Speedtest Dashboard Engine - Strict Authentic Logs Mode (No Filler Data)
 
-let selectedDate = new Date(); // Default to Today
+let selectedDate = new Date(); // Default to Today or Latest Active Date
 let calendarCurrentMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
 
 let coreRouterLogs = [];
 let homeMikroLogs = [];
 let chartInstance = null;
+let initialDateLoaded = false;
 
 // Initialize Dashboard
 document.addEventListener('DOMContentLoaded', async () => {
   setupEventListeners();
   await loadRealLogData();
+  
+  // Auto-select latest active date if today has no logs initially
+  if (!initialDateLoaded) {
+    autoSelectLatestActiveDate();
+    initialDateLoaded = true;
+  }
+  
   renderCalendar();
   updateDashboard();
   setupSynchronizedScrolling();
@@ -92,7 +100,29 @@ function setupSynchronizedScrolling() {
   });
 }
 
-// Load Strictly Authentic Log Data (No Filler / Simulated Data)
+// Auto-select latest active date
+function autoSelectLatestActiveDate() {
+  const allLogs = [...coreRouterLogs, ...homeMikroLogs];
+  if (allLogs.length === 0) return;
+  
+  const today = new Date();
+  const todayLogs = allLogs.filter(l => 
+    l.dateObj.getFullYear() === today.getFullYear() &&
+    l.dateObj.getMonth() === today.getMonth() &&
+    l.dateObj.getDate() === today.getDate()
+  );
+  
+  if (todayLogs.length === 0) {
+    // Sort descending to find most recent log date
+    const sorted = [...allLogs].sort((a, b) => b.dateObj - a.dateObj);
+    if (sorted[0]) {
+      selectedDate = new Date(sorted[0].dateObj);
+      calendarCurrentMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+    }
+  }
+}
+
+// Load Strictly Authentic Log Data
 async function loadRealLogData() {
   coreRouterLogs = [];
   homeMikroLogs = [];
@@ -122,10 +152,9 @@ async function loadRealLogData() {
   try {
     const apiLogs = await fetchFromGitHubAPI();
     if (apiLogs && apiLogs.length > 0) {
-      // Merge unique entries by timestamp/device
-      const existingKeys = new Set(fetchedLogs.map(l => `${l.device}_${l.date}_${l.time}`));
+      const existingKeys = new Set(fetchedLogs.map(l => `${l.device}_${l.date || l.timestamp}_${l.time || ''}`));
       apiLogs.forEach(item => {
-        const key = `${item.device}_${item.date}_${item.time}`;
+        const key = `${item.device}_${item.date || item.timestamp}_${item.time || ''}`;
         if (!existingKeys.has(key)) {
           fetchedLogs.push(item);
           existingKeys.add(key);
@@ -146,7 +175,7 @@ async function loadRealLogData() {
       dateObj: dateObj,
       speed_mbps: Number(entry.speed_mbps) || 0,
       unit: entry.unit || 'Mbps',
-      target: entry.target || 'Manila Cloudflare CDN'
+      target: entry.target || (entry.device === 'CoreRouter' ? 'Manila Cloudflare CDN' : 'Backbone Transit (VLAN 100)')
     };
 
     if (entry.device === 'CoreRouter') {
@@ -197,10 +226,23 @@ async function fetchFromGitHubAPI() {
 
 function parseTimestamp(tsStr) {
   if (!tsStr) return new Date();
-  // Expect format "YYYY-MM-DD HH:MM:SS" or ISO
   const normalized = tsStr.replace(' ', 'T');
   const d = new Date(normalized);
   return isNaN(d.getTime()) ? new Date() : d;
+}
+
+// Format relative time (e.g. "3 mins ago")
+function formatRelativeTime(dateObj) {
+  const now = new Date();
+  const diffMs = now - dateObj;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHour = Math.floor(diffMin / 60);
+
+  if (diffSec < 45) return 'Just now';
+  if (diffMin < 60) return `${diffMin} min${diffMin === 1 ? '' : 's'} ago`;
+  if (diffHour < 24) return `${diffHour} hr${diffHour === 1 ? '' : 's'} ago`;
+  return dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 // Human readable timestamp formatting
@@ -218,13 +260,11 @@ function formatHumanReadableTime(dateObj) {
 }
 
 // Dynamic HSL Speed Color Generator
-// Under 200 Mbps -> Red Spectrum (Vibrant Red at 0 -> Muted Grayish-Red at 200)
-// Over/Equal 200 Mbps -> Green Spectrum (Muted Grayish-Green at 200 -> Vibrant Emerald Green at 1000)
 function getSpeedColorStyle(speed) {
   if (speed < 200) {
     const ratio = Math.max(0, Math.min(1, speed / 200));
-    const saturation = 85 - (ratio * 60); // 85% down to 25%
-    const lightness = 42 + (ratio * 8);    // 42% up to 50%
+    const saturation = 85 - (ratio * 60);
+    const lightness = 42 + (ratio * 8);
     const opacity = 0.85 + (1 - ratio) * 0.15;
     
     return {
@@ -234,8 +274,8 @@ function getSpeedColorStyle(speed) {
     };
   } else {
     const ratio = Math.max(0, Math.min(1, (speed - 200) / 800));
-    const saturation = 25 + (ratio * 65); // 25% up to 90%
-    const lightness = 35 + (ratio * 12);  // 35% up to 47%
+    const saturation = 25 + (ratio * 65);
+    const lightness = 35 + (ratio * 12);
     
     return {
       bg: `hsl(142, ${saturation.toFixed(1)}%, ${lightness.toFixed(1)}%)`,
@@ -249,6 +289,7 @@ function getSpeedColorStyle(speed) {
 function renderCalendar() {
   const monthTitle = document.getElementById('calMonthYear');
   const grid = document.getElementById('calGrid');
+  if (!monthTitle || !grid) return;
   
   const monthNames = ["January", "February", "March", "April", "May", "June",
                       "July", "August", "September", "October", "November", "December"];
@@ -319,15 +360,52 @@ function renderCalendar() {
 
 // Update Entire Dashboard Views
 function updateDashboard() {
+  renderLiveGauges();
   renderDualTables();
   render7DayMetrics();
   render30MinAverageChart();
+}
+
+// Render Live Speedometer Gauges
+function renderLiveGauges() {
+  const arcLength = 210; // SVG dasharray length for 200-degree arc
+  
+  // 1. CoreRouter Live Gauge
+  const latestCore = coreRouterLogs.length > 0 ? coreRouterLogs[coreRouterLogs.length - 1] : null;
+  if (latestCore) {
+    document.getElementById('coreLiveSpeed').innerText = latestCore.speed_mbps;
+    document.getElementById('coreLastTime').innerText = `${formatRelativeTime(latestCore.dateObj)} (${latestCore.dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})`;
+    
+    const speedRatio = Math.min(1, Math.max(0, latestCore.speed_mbps / 600));
+    const offset = arcLength - (speedRatio * arcLength);
+    const arcElem = document.getElementById('coreGaugeArc');
+    if (arcElem) {
+      arcElem.style.strokeDashoffset = offset;
+      arcElem.setAttribute('stroke', latestCore.speed_mbps >= 200 ? '#38bdf8' : '#ef4444');
+    }
+  }
+  
+  // 2. HomeMikro Live Gauge
+  const latestHome = homeMikroLogs.length > 0 ? homeMikroLogs[homeMikroLogs.length - 1] : null;
+  if (latestHome) {
+    document.getElementById('homeLiveSpeed').innerText = latestHome.speed_mbps;
+    document.getElementById('homeLastTime').innerText = `${formatRelativeTime(latestHome.dateObj)} (${latestHome.dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})`;
+    
+    const speedRatio = Math.min(1, Math.max(0, latestHome.speed_mbps / 600));
+    const offset = arcLength - (speedRatio * arcLength);
+    const arcElem = document.getElementById('homeGaugeArc');
+    if (arcElem) {
+      arcElem.style.strokeDashoffset = offset;
+      arcElem.setAttribute('stroke', latestHome.speed_mbps >= 200 ? '#c084fc' : '#ef4444');
+    }
+  }
 }
 
 // Render Side-by-Side Dual Tables for Selected Date
 function renderDualTables() {
   const tbodyCore = document.getElementById('tbodyCoreRouter');
   const tbodyHome = document.getElementById('tbodyHomeMikro');
+  if (!tbodyCore || !tbodyHome) return;
   
   tbodyCore.innerHTML = '';
   tbodyHome.innerHTML = '';
@@ -340,7 +418,7 @@ function renderDualTables() {
     l.dateObj.getFullYear() === selYear &&
     l.dateObj.getMonth() === selMonth &&
     l.dateObj.getDate() === selDay
-  ).sort((a, b) => b.dateObj - a.dateObj); // Most recent first
+  ).sort((a, b) => b.dateObj - a.dateObj);
   
   const filteredHome = homeMikroLogs.filter(l => 
     l.dateObj.getFullYear() === selYear &&
@@ -352,9 +430,9 @@ function renderDualTables() {
   if (filteredCore.length === 0) {
     tbodyCore.innerHTML = `
       <tr>
-        <td colspan="3" style="text-align: center; color: #6b7280; padding: 2rem 1rem;">
-          No authentic CoreRouter speed test logs recorded for this date.<br>
-          <small style="color: #4b5563;">Logging runs continuously every 5 minutes from your device.</small>
+        <td colspan="3" style="text-align: center; color: #64748b; padding: 2rem 1rem;">
+          No CoreRouter speed test logs recorded for this date.<br>
+          <small style="color: #475569;">Scheduled tests run automatically every 5 minutes.</small>
         </td>
       </tr>
     `;
@@ -380,9 +458,9 @@ function renderDualTables() {
   if (filteredHome.length === 0) {
     tbodyHome.innerHTML = `
       <tr>
-        <td colspan="3" style="text-align: center; color: #6b7280; padding: 2rem 1rem;">
-          No authentic HomeMikro speed test logs recorded for this date.<br>
-          <small style="color: #4b5563;">Logging runs continuously every 5 minutes from your device.</small>
+        <td colspan="3" style="text-align: center; color: #64748b; padding: 2rem 1rem;">
+          No HomeMikro speed test logs recorded for this date.<br>
+          <small style="color: #475569;">Scheduled tests run automatically every 5 minutes.</small>
         </td>
       </tr>
     `;
@@ -405,7 +483,7 @@ function renderDualTables() {
   }
 }
 
-// 7-Day SLA Metrics Analysis Box Renderer (Authentic Data Only)
+// 7-Day SLA Metrics Analysis Box Renderer
 function render7DayMetrics() {
   const allLogs = [...coreRouterLogs, ...homeMikroLogs];
   
@@ -447,7 +525,7 @@ function render7DayMetrics() {
   document.getElementById('metricComplianceSub').innerText = `${compliantPercent}% ≥ 200Mbps | ${slowPercent}% < 200Mbps (${allLogs.length} authentic tests recorded)`;
 }
 
-// 7-Day (30-Minute Increment) Chart Renderer (Strict Authentic Log Points)
+// 7-Day Chart Renderer
 function render30MinAverageChart() {
   const canvas = document.getElementById('speedTrendChart');
   if (!canvas) return;
@@ -460,10 +538,8 @@ function render30MinAverageChart() {
     return;
   }
   
-  // Group authentic logs by 30-minute intervals
   const labelsMap = new Map();
   
-  // Collect all unique 30-min time labels from authentic logs
   allLogs.forEach(l => {
     const d = new Date(l.dateObj);
     d.setMinutes(Math.floor(d.getMinutes() / 30) * 30, 0, 0);
@@ -484,12 +560,10 @@ function render30MinAverageChart() {
     const slotEnd = new Date(slotStart);
     slotEnd.setMinutes(slotEnd.getMinutes() + 30);
     
-    // CoreRouter avg in this slot
     const logsCore = coreRouterLogs.filter(l => l.dateObj >= slotStart && l.dateObj < slotEnd);
     const avgCore = logsCore.length > 0 ? Math.round(logsCore.reduce((a, b) => a + b.speed_mbps, 0) / logsCore.length) : null;
     core30MinAvg.push(avgCore);
     
-    // HomeMikro avg in this slot
     const logsHome = homeMikroLogs.filter(l => l.dateObj >= slotStart && l.dateObj < slotEnd);
     const avgHome = logsHome.length > 0 ? Math.round(logsHome.reduce((a, b) => a + b.speed_mbps, 0) / logsHome.length) : null;
     home30MinAvg.push(avgHome);
@@ -505,29 +579,29 @@ function render30MinAverageChart() {
       labels: labels,
       datasets: [
         {
-          label: 'CoreRouter (30m Avg)',
+          label: 'CoreRouter (Direct ISP1 WAN)',
           data: core30MinAvg,
           borderColor: '#38bdf8',
           backgroundColor: 'rgba(56, 189, 248, 0.15)',
           borderWidth: 3,
-          pointRadius: 5,
-          pointHoverRadius: 7,
+          pointRadius: 4,
+          pointHoverRadius: 6,
           pointBackgroundColor: '#38bdf8',
           spanGaps: true,
-          tension: 0.2,
+          tension: 0.25,
           fill: false
         },
         {
-          label: 'HomeMikro (30m Avg)',
+          label: 'HomeMikro (Backbone Transit)',
           data: home30MinAvg,
           borderColor: '#c084fc',
           backgroundColor: 'rgba(192, 132, 252, 0.15)',
           borderWidth: 3,
-          pointRadius: 5,
-          pointHoverRadius: 7,
+          pointRadius: 4,
+          pointHoverRadius: 6,
           pointBackgroundColor: '#c084fc',
           spanGaps: true,
-          tension: 0.2,
+          tension: 0.25,
           fill: false
         }
       ]
@@ -542,16 +616,17 @@ function render30MinAverageChart() {
       plugins: {
         legend: {
           labels: {
-            color: '#9ca3af',
-            font: { family: 'Inter', size: 11 }
+            color: '#94a3b8',
+            font: { family: 'Inter', size: 12, weight: 600 }
           }
         },
         tooltip: {
           backgroundColor: '#0f172a',
           titleColor: '#38bdf8',
-          bodyColor: '#e5e7eb',
+          bodyColor: '#e2e8f0',
           borderColor: 'rgba(255,255,255,0.1)',
           borderWidth: 1,
+          padding: 10,
           callbacks: {
             label: function(context) {
               return `${context.dataset.label}: ${context.parsed.y} Mbps`;
@@ -563,7 +638,7 @@ function render30MinAverageChart() {
         x: {
           grid: { color: 'rgba(255, 255, 255, 0.04)' },
           ticks: {
-            color: '#9ca3af',
+            color: '#64748b',
             font: { size: 11 }
           }
         },
@@ -572,7 +647,7 @@ function render30MinAverageChart() {
           max: 600,
           grid: { color: 'rgba(255, 255, 255, 0.06)' },
           ticks: {
-            color: '#9ca3af',
+            color: '#64748b',
             font: { size: 11 },
             callback: value => `${value}M`
           }
