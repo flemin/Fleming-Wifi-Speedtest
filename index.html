@@ -6,6 +6,15 @@
   <title>Fleming WiFi | MikroTik Speedtest Analytics & Network Monitor</title>
   <meta name="description" content="Real-time continuous speedtest log monitoring for CoreRouter and HomeMikro devices with live gauge meters, 24-hour congestion heatmap, latency tracking, 7-day 30-min averages, and SLA tracking.">
   
+  <!-- PWA & Mobile Web App Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#070b13">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Fleming WiFi">
+
   <!-- Cache Control Meta Tags -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -328,6 +337,6 @@
   </div>
 
   <!-- Dashboard JavaScript -->
-  <script src="speedtest.js?v=20260818_features"></script>
+  <script src="speedtest.js?v=20260818_pwa"></script>
 </body>
 </html>
