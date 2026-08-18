@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fleming WiFi | Cloud NOC Mirror (Encrypted)</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Outfit:wght@600;700;800&display=swap">
+  <style>
+    :root {
+      --bg: #060911;
+      --card-bg: rgba(13, 20, 36, 0.75);
+      --card-hover: rgba(22, 33, 58, 0.85);
+      --border: rgba(255, 255, 255, 0.08);
+      
+      --status-online: #10b981;
+      --status-offline: #ef4444;
+      
+      --cat-mikro-text: #d8b4fe;
+      --cat-mikro-bg: rgba(216, 180, 254, 0.12);
+      --cat-mikro-border: rgba(216, 180, 254, 0.3);
+      --cat-mikro-line: #a855f7;
+
+      --cat-switch-text: #d4a373;
+      --cat-switch-bg: rgba(212, 163, 115, 0.12);
+      --cat-switch-border: rgba(212, 163, 115, 0.3);
+      --cat-switch-line: #b08968;
+
+      --cyan: #38bdf8;
+      --amber: #f59e0b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --dim: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(216, 180, 254, 0.05) 0px, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(212, 163, 115, 0.05) 0px, transparent 40%);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      padding: 1.25rem;
+      min-height: 100vh;
+    }
+
+    /* Auth Screen Box */
+    #authOverlay {
+      position: fixed; inset: 0; background: var(--bg);
+      background-image: 
+        radial-gradient(circle at 20% 20%, rgba(168, 85, 247, 0.12) 0px, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.12) 0px, transparent 50%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem; z-index: 1000;
+    }
+    .login-box {
+      width: 100%; max-width: 420px; background: rgba(13, 20, 36, 0.85); backdrop-filter: blur(20px);
+      border: 1px solid var(--border); border-radius: 20px; padding: 2.25rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(56, 189, 248, 0.1);
+      display: flex; flex-direction: column; gap: 1.5rem;
+    }
+    .brand-header { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.6rem; }
+    .brand-logo {
+      width: 54px; height: 54px; background: linear-gradient(135deg, #a855f7, #38bdf8);
+      border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+    }
+    .brand-header h1 { font-family: 'Outfit', sans-serif; font-size: 1.35rem; font-weight: 800; }
+    .brand-header p { font-size: 0.8rem; color: var(--muted); }
+    
+    .login-form { display: flex; flex-direction: column; gap: 1.1rem; }
+    .input-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .input-group label { font-size: 0.76rem; font-weight: 600; text-transform: uppercase; color: var(--muted); }
+    .input-wrapper input {
+      width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.75rem 1rem; color: #fff; font-size: 0.9rem; outline: none;
+    }
+    .input-wrapper input:focus { border-color: var(--cyan); box-shadow: 0 0 12px rgba(56, 189, 248, 0.25); }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #0284c7, #6366f1); color: #fff; border: none; border-radius: 10px;
+      padding: 0.85rem; font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.5rem;
+    }
+    .btn-submit:hover { background: linear-gradient(135deg, #0ea5e9, #4f46e5); }
+    .error-banner {
+      background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #f87171; padding: 0.65rem 0.9rem; border-radius: 8px; font-size: 0.8rem; display: none; align-items: center; gap: 0.5rem;
+    }
+
+    /* Dashboard Layout */
+    .container { max-width: 1500px; margin: 0 auto; display: none; flex-direction: column; gap: 1.25rem; }
+    
+    .header {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+      background: var(--card-bg); backdrop-filter: blur(16px);
+      border: 1px solid var(--border); border-radius: 16px; padding: 1.1rem 1.5rem;
+    }
+    .brand { display: flex; align-items: center; gap: 0.85rem; }
+    .brand-icon {
+      width: 42px; height: 42px; background: linear-gradient(135deg, #a855f7, #b08968);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+    }
+    .brand h1 { font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 800; }
+    .brand p { font-size: 0.78rem; color: var(--muted); }
+    
+    .summary-stats { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .stat-pill {
+      display: flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.8rem; border-radius: 20px;
+      font-size: 0.76rem; font-weight: 600; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
+    }
+    .stat-pill.online { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #34d399; }
+    .stat-pill.offline { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.35); color: #f87171; }
+
+    .controls-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .tabs-group { display: flex; align-items: center; gap: 0.4rem; background: rgba(0, 0, 0, 0.4); padding: 0.25rem; border-radius: 10px; border: 1px solid var(--border); }
+    .tab-btn {
+      background: transparent; border: 1px solid transparent; color: var(--muted); padding: 0.35rem 0.8rem;
+      border-radius: 8px; font-size: 0.76rem; font-weight: 600; cursor: pointer;
+    }
+    .tab-btn.active { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.25); color: #fff; }
+
+    .table-container { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.82rem; }
+    thead th {
+      background: rgba(0, 0, 0, 0.45); color: var(--muted); font-size: 0.72rem; text-transform: uppercase;
+      padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); font-weight: 700;
+    }
+    
+    .category-header-row td {
+      background: rgba(0, 0, 0, 0.35); padding: 0.6rem 1rem; font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem; font-weight: 800; border-top: 1px solid var(--border); border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .header-tag-mikrotik { color: var(--cat-mikro-text); display: flex; align-items: center; gap: 0.45rem; }
+    .header-tag-switch { color: var(--cat-switch-text); display: flex; align-items: center; gap: 0.45rem; }
+
+    tbody tr.device-row { border-bottom: 1px solid rgba(255, 255, 255, 0.04); cursor: pointer; transition: all 0.15s ease; }
+    tbody tr.device-row:hover { background: var(--card-hover); }
+    tbody tr.device-row.expanded { background: rgba(30, 41, 59, 0.7); border-bottom: none; }
+    td { padding: 0.85rem 1rem; vertical-align: middle; }
+
+    .marker-mikrotik { border-left: 4px solid var(--cat-mikro-line); }
+    .marker-switch { border-left: 4px solid var(--cat-switch-line); }
+
+    .status-badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+    .status-badge.online { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
+    .status-badge.offline { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .status-badge.online .status-dot { background: #34d399; box-shadow: 0 0 6px #34d399; }
+    .status-badge.offline .status-dot { background: #f87171; }
+
+    .device-title { font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 700; color: #fff; }
+    .device-subtitle { font-size: 0.72rem; color: var(--muted); }
+    
+    .category-pill { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; padding: 0.15rem 0.45rem; border-radius: 4px; }
+    .category-pill.mikrotik { background: var(--cat-mikro-bg); color: var(--cat-mikro-text); border: 1px solid var(--cat-mikro-border); }
+    .category-pill.switch { background: var(--cat-switch-bg); color: var(--cat-switch-text); border: 1px solid var(--cat-switch-border); }
+
+    .ip-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #cbd5e1; }
+
+    .mini-port-strip { display: flex; align-items: center; gap: 0.25rem; }
+    .mini-port-led { width: 8px; height: 8px; border-radius: 2px; }
+    .mini-port-led.up { background: #10b981; box-shadow: 0 0 5px #10b981; }
+    .mini-port-led.down { background: #334155; opacity: 0.45; }
+
+    .drawer-row { background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255, 255, 255, 0.08); display: none; }
+    .drawer-row.show { display: table-row; }
+    .drawer-content { padding: 1.25rem 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+    
+    .detail-card { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .detail-card-title { font-size: 0.76rem; text-transform: uppercase; font-weight: 700; color: var(--muted); border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 0.4rem; }
+    .detail-row { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); }
+    .detail-val { font-family: 'JetBrains Mono', monospace; color: #fff; font-weight: 600; }
+
+    .drawer-port-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.2rem; }
+    .drawer-port-block { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 0.25rem 0.4rem; min-width: 36px; }
+    .drawer-port-led { width: 6px; height: 6px; border-radius: 50%; }
+    .drawer-port-led.up { background: #10b981; box-shadow: 0 0 6px #10b981; }
+    .drawer-port-led.down { background: #475569; opacity: 0.4; }
+    .drawer-port-label { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #cbd5e1; }
+
+    .metric-bar-box { display: flex; flex-direction: column; gap: 0.2rem; }
+    .metric-bar-header { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted); }
+    .metric-bar-bg { width: 100%; height: 5px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; }
+    .metric-bar-fill { height: 100%; border-radius: 3px; }
+
+    .incident-section { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    .incident-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 0.75rem; }
+    .incident-title { display: flex; align-items: center; gap: 0.6rem; font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 800; color: #fff; }
+    .btn-clear { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.18); color: #cbd5e1; padding: 0.35rem 0.85rem; border-radius: 8px; font-size: 0.76rem; font-weight: 700; cursor: pointer; }
+    .btn-clear:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+
+    .incident-list { display: flex; flex-direction: column; gap: 0.65rem; }
+    .incident-item { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.06); border-left: 4px solid var(--status-offline); border-radius: 8px; padding: 0.85rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .incident-item.resolved { border-left-color: var(--status-online); }
+    .incident-meta { display: flex; flex-direction: column; gap: 0.25rem; }
+    .incident-headline { font-weight: 700; color: #f1f5f9; display: flex; align-items: center; gap: 0.5rem; }
+    .incident-desc { font-size: 0.78rem; color: var(--muted); }
+    .incident-time { font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: #cbd5e1; }
+    .empty-incident { text-align: center; color: var(--muted); padding: 2rem; font-size: 0.82rem; }
+
+    .footer-note { text-align: center; font-size: 0.76rem; color: var(--dim); margin-top: 0.75rem; }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Encrypted Auth Overlay -->
+  <div id="authOverlay">
+    <div class="login-box">
+      <div class="brand-header">
+        <div class="brand-logo">🛡️</div>
+        <h1>Fleming WiFi — Cloud NOC</h1>
+        <p>AES-256 Encrypted Mirror • Operator Access</p>
+      </div>
+
+      <div class="error-banner" id="errorBanner">
+        <span>⚠️</span>
+        <span id="errorMessage">Invalid operator credentials or decryption key failed.</span>
+      </div>
+
+      <form class="login-form" id="loginForm" onsubmit="handleCloudLogin(event)">
+        <div class="input-group">
+          <label for="username">Operator Username</label>
+          <div class="input-wrapper">
+            <input type="text" id="username" name="username" placeholder="Enter operator username" autocomplete="username" required autofocus>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="password">Security Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="password" name="password" placeholder="Enter security password" autocomplete="current-password" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span>🔒</span>
+          <span>Decrypt &amp; Unlock NOC</span>
+        </button>
+      </form>
+
+      <div style="text-align: center; font-size: 0.72rem; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+        <span>🔒</span>
+        <span>Client-Side AES-256 Zero-Knowledge Decryption</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Main Decrypted Dashboard Container -->
+  <div class="container" id="dashboardContainer">
+    
+    <!-- Top Header -->
+    <div class="header">
+      <div class="brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <h1>Fleming WiFi — Cloud NOC Mirror</h1>
+          <p>Global Encrypted CDN Mirror • Direct GitHub Pages Feed</p>
+        </div>
+      </div>
+      <div class="summary-stats">
+        <div class="stat-pill" id="pillTotal">Total: 10 Devices</div>
+        <div class="stat-pill online" id="pillOnline">● 4 Online</div>
+        <div class="stat-pill offline" id="pillOffline">● 6 Offline</div>
+        <div class="stat-pill" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.35); color: #d8b4fe;">
+          <span>👤</span>
+          <span id="userNameTag">Operator</span>
+        </div>
+        <button class="btn-clear" onclick="handleLogout()">🔒 Logout</button>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="controls-bar">
+      <div class="tabs-group" id="filterTabs">
+        <button class="tab-btn active" data-filter="all">All Devices (10)</button>
+        <button class="tab-btn" data-filter="mikrotik" style="color: var(--cat-mikro-text);">🔮 MikroTiks (7)</button>
+        <button class="tab-btn" data-filter="switch" style="color: var(--cat-switch-text);">🟤 Switches (3)</button>
+        <button class="tab-btn" data-filter="online">🟢 Online Only</button>
+        <button class="tab-btn" data-filter="offline">🔴 Offline Only</button>
+      </div>
+      <div style="font-size: 0.76rem; color: var(--muted);" id="mirrorLastUpdate">
+        ⚡ Cloud Snapshot Updated: Just now
+      </div>
+    </div>
+
+    <!-- Horizontal Fleet Table -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 110px;">Status</th>
+            <th>Device Name</th>
+            <th>Role &amp; Subnet</th>
+            <th>Management IP</th>
+            <th>Uptime / Last Seen</th>
+            <th>CPU / RAM</th>
+            <th>Port LEDs</th>
+            <th>Speed / Link</th>
+            <th style="text-align: right;">Details</th>
+          </tr>
+        </thead>
+        <tbody id="fleetTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Persistent Incident Log -->
+    <div class="incident-section">
+      <div class="incident-header">
+        <div class="incident-title">
+          <span>⚠️</span>
+          <span>Persistent Incident &amp; Outage Event Journal</span>
+          <span style="font-size: 0.74rem; font-weight: 500; color: var(--muted);" id="incidentCountBadge">(2 Recorded)</span>
+        </div>
+      </div>
+      <div class="incident-list" id="incidentList">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <div class="footer-note">
+      🔒 Securely decrypted in browser • Zero inbound ports exposed • 100% Inbound Hacker-Proof
+    </div>
+  </div>
+
+  <script>
+    let allDevices = [];
+    let currentFilter = 'all';
+    let expandedDevice = null;
+    let incidentEvents = [];
+    let cachedKey = null;
+
+    // Web Crypto: Convert Base64 string to Uint8Array
+    function b64ToUint8Array(b64) {
+      const bin = atob(b64);
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      return arr;
+    }
+
+    // Web Crypto: Decrypt AES-256-CBC with PBKDF2 (SHA256, 10000 iterations)
+    async function decryptPayload(encryptedObj, password) {
+      const salt = b64ToUint8Array(encryptedObj.salt);
+      const iv = b64ToUint8Array(encryptedObj.iv);
+      const cipherData = b64ToUint8Array(encryptedObj.data);
+
+      const enc = new TextEncoder();
+      const passKey = await crypto.subtle.importKey(
+        'raw', enc.encode(password), { name: 'PBKDF2' }, false, ['deriveKey']
+      );
+
+      const aesKey = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: salt, iterations: 10000, hash: 'SHA-256' },
+        passKey,
+        { name: 'AES-CBC', length: 256 },
+        false,
+        ['decrypt']
+      );
+
+      const decryptedBytes = await crypto.subtle.decrypt(
+        { name: 'AES-CBC', iv: iv },
+        aesKey,
+        cipherData
+      );
+
+      const dec = new TextDecoder('utf-8');
+      return JSON.parse(dec.decode(decryptedBytes));
+    }
+
+    async function handleCloudLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('username').value.trim().toLowerCase();
+      const pass = document.getElementById('password').value;
+      const errorBanner = document.getElementById('errorBanner');
+      const submitBtn = document.getElementById('submitBtn');
+
+      errorBanner.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Decrypting Fleet Telemetry...';
+
+      // Check allowed operators
+      if (user !== 'admin' && user !== 'cfleming') {
+        errorBanner.style.display = 'flex';
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🔒</span><span>Decrypt &amp; Unlock NOC</span>';
+        return;
+      }
+
+      try {
+        const res = await fetch('noc_fleet_encrypted.json?t=' + Date.now());
+        if (!res.ok) throw new Error('Could not fetch encrypted snapshot');
+        const encryptedData = await res.json();
+
+        const decrypted = await decryptPayload(encryptedData, pass);
+        
+        // Cache credentials in session storage
+        sessionStorage.setItem('noc_cloud_user', user);
+        sessionStorage.setItem('noc_cloud_pass', pass);
+
+        document.getElementById('authOverlay').style.display = 'none';
+        document.getElementById('dashboardContainer').style.display = 'flex';
+        document.getElementById('userNameTag').innerText = user;
+
+        applyDecryptedData(decrypted);
+      } catch (err) {
+        console.error('Decryption error:', err);
+        errorBanner.style.display = 'flex';
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🔒</span><span>Decrypt &amp; Unlock NOC</span>';
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('noc_cloud_user');
+      sessionStorage.removeItem('noc_cloud_pass');
+      window.location.reload();
+    }
+
+    function applyDecryptedData(data) {
+      const mikros = data.mikrotiks || [];
+      const switches = data.switches || [];
+      allDevices = [...mikros, ...switches];
+      incidentEvents = data.incidents || [];
+
+      if (data.timestamp) {
+        document.getElementById('mirrorLastUpdate').innerText = `⚡ Cloud Snapshot Updated: ${data.timestamp} PHT`;
+      }
+
+      const onlineCount = allDevices.filter(d => d.status === 'Online').length;
+      const offlineCount = allDevices.length - onlineCount;
+
+      document.getElementById('pillTotal').innerText = `Total: ${allDevices.length} Devices`;
+      document.getElementById('pillOnline').innerText = `● ${onlineCount} Online`;
+      document.getElementById('pillOffline').innerText = `● ${offlineCount} Offline`;
+
+      renderTable();
+      renderIncidentLog();
+    }
+
+    function renderDeviceRows(devices, container) {
+      devices.forEach((dev) => {
+        const isOnline = dev.status === 'Online';
+        const isMikrotik = dev.category === 'mikrotik';
+        const isExpanded = expandedDevice === dev.name;
+        const markerClass = isMikrotik ? 'marker-mikrotik' : 'marker-switch';
+
+        const cpuVal = Number(dev.cpu_val) || 0;
+        const cpuColor = cpuVal < 40 ? 'var(--status-online)' : cpuVal < 80 ? 'var(--amber)' : 'var(--status-offline)';
+
+        const ports = dev.ports || [];
+        const miniPortDots = ports.map(p => 
+          `<span class="mini-port-led ${p.status}" title="${p.name}: ${p.status.toUpperCase()} (${p.speed}) - ${p.desc}"></span>`
+        ).join('');
+
+        const fullPortMatrix = ports.map(p => `
+          <div class="drawer-port-block" title="${p.name}: ${p.status.toUpperCase()} (${p.speed}) - ${p.desc}">
+            <span class="drawer-port-led ${p.status}"></span>
+            <span class="drawer-port-label">${p.name}</span>
+          </div>
+        `).join('');
+
+        const tr = document.createElement('tr');
+        tr.className = `device-row ${markerClass} ${isExpanded ? 'expanded' : ''}`;
+        tr.onclick = () => toggleDrawer(dev.name);
+
+        tr.innerHTML = `
+          <td>
+            <span class="status-badge ${isOnline ? 'online' : 'offline'}">
+              <span class="status-dot"></span>
+              <span>${dev.status}</span>
+            </span>
+          </td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span class="category-pill ${dev.category}">${dev.category === 'mikrotik' ? 'MikroTik' : 'Switch'}</span>
+              <span class="device-title">${dev.name}</span>
+            </div>
+            <div class="device-subtitle">${dev.type}</div>
+          </td>
+          <td>
+            <div style="font-weight: 600; color: #f1f5f9;">${dev.role}</div>
+            <div class="device-subtitle">${dev.active_clients || ''}</div>
+          </td>
+          <td>
+            <span class="ip-tag">${dev.ip}</span>
+            ${dev.vpn_ip ? `<div class="device-subtitle">VPN: ${dev.vpn_ip}</div>` : ''}
+          </td>
+          <td>
+            <span style="color: ${isOnline ? '#a5b4fc' : '#f87171'}; font-weight: 500;">
+              ${dev.uptime}
+            </span>
+          </td>
+          <td>
+            ${isOnline ? `
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.76rem;">
+                <span style="color: ${cpuColor}; font-weight: 700;">CPU: ${dev.cpu_load}</span>
+                <span style="color: var(--dim);">|</span>
+                <span style="color: ${isMikrotik ? 'var(--cat-mikro-text)' : 'var(--cat-switch-text)'};">RAM: ${dev.ram_val || 0}%</span>
+              </div>
+            ` : `<span style="color: var(--dim);">--</span>`}
+          </td>
+          <td>
+            <div class="mini-port-strip">${miniPortDots}</div>
+          </td>
+          <td>
+            <span style="font-family: 'Outfit', sans-serif; font-weight: 700; color: ${isOnline ? '#fff' : 'var(--dim)'};">
+              ${dev.latest_speed}
+            </span>
+          </td>
+          <td style="text-align: right; color: ${isMikrotik ? 'var(--cat-mikro-text)' : 'var(--cat-switch-text)'}; font-weight: 700;">
+            ${isExpanded ? '▲' : '▼'}
+          </td>
+        `;
+
+        container.appendChild(tr);
+
+        const drawerTr = document.createElement('tr');
+        drawerTr.className = `drawer-row ${isExpanded ? 'show' : ''}`;
+        drawerTr.innerHTML = `
+          <td colspan="9" style="padding: 0;">
+            <div class="drawer-content">
+              <div class="detail-card">
+                <div class="detail-card-title">⚡ Resource &amp; Memory Utilization</div>
+                <div class="metric-bar-box">
+                  <div class="metric-bar-header"><span>CPU Load</span><span style="color: ${cpuColor}; font-weight: 700;">${dev.cpu_load}</span></div>
+                  <div class="metric-bar-bg"><div class="metric-bar-fill" style="width: ${Math.max(5, cpuVal)}%; background: ${cpuColor};"></div></div>
+                </div>
+                <div class="metric-bar-box">
+                  <div class="metric-bar-header"><span>Used RAM</span><span style="color: ${isMikrotik ? 'var(--cat-mikro-text)' : 'var(--cat-switch-text)'}; font-weight: 700;">${dev.used_ram}</span></div>
+                  <div class="metric-bar-bg"><div class="metric-bar-fill" style="width: ${Math.max(5, dev.ram_val || 0)}%; background: ${isMikrotik ? 'var(--cat-mikro-text)' : 'var(--cat-switch-text)'};"></div></div>
+                </div>
+                <div class="metric-bar-box">
+                  <div class="metric-bar-header"><span>Used Flash Storage</span><span style="color: #c084fc; font-weight: 700;">${dev.used_storage}</span></div>
+                  <div class="metric-bar-bg"><div class="metric-bar-fill" style="width: ${Math.max(5, dev.storage_val || 0)}%; background: #c084fc;"></div></div>
+                </div>
+              </div>
+
+              <div class="detail-card">
+                <div class="detail-card-title">🌡️ Health, Thermal &amp; Network</div>
+                <div class="detail-row"><span>Thermal / Voltage:</span><span class="detail-val" style="color: #facc15;">${dev.temp_voltage}</span></div>
+                <div class="detail-row"><span>Cumulative Traffic:</span><span class="detail-val">${dev.traffic_volume}</span></div>
+                <div class="detail-row"><span>Firmware OS:</span><span class="detail-val" style="color: ${isMikrotik ? 'var(--cat-mikro-text)' : 'var(--cat-switch-text)'};">${dev.version}</span></div>
+                <div class="detail-row"><span>Last Telemetry Poll:</span><span class="detail-val" style="color: var(--muted);">${dev.last_poll}</span></div>
+              </div>
+
+              <div class="detail-card">
+                <div class="detail-card-title">🔌 Physical Port Matrix &amp; LED States</div>
+                <div class="drawer-port-grid">${fullPortMatrix}</div>
+                <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.4rem;">Hover over any port block to view uplink &amp; speed details.</div>
+              </div>
+            </div>
+          </td>
+        `;
+
+        container.appendChild(drawerTr);
+      });
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('fleetTableBody');
+      tbody.innerHTML = '';
+
+      let mikrotiks = allDevices.filter(d => d.category === 'mikrotik');
+      let switches = allDevices.filter(d => d.category === 'switch');
+
+      if (currentFilter === 'mikrotik') switches = [];
+      else if (currentFilter === 'switch') mikrotiks = [];
+      else if (currentFilter === 'online') {
+        mikrotiks = mikrotiks.filter(d => d.status === 'Online');
+        switches = switches.filter(d => d.status === 'Online');
+      } else if (currentFilter === 'offline') {
+        mikrotiks = mikrotiks.filter(d => d.status !== 'Online');
+        switches = switches.filter(d => d.status !== 'Online');
+      }
+
+      mikrotiks.sort((a, b) => a.name.localeCompare(b.name));
+      switches.sort((a, b) => a.name.localeCompare(b.name));
+
+      if (mikrotiks.length > 0) {
+        const trHeaderMikro = document.createElement('tr');
+        trHeaderMikro.className = 'category-header-row';
+        trHeaderMikro.innerHTML = `<td colspan="9"><span class="header-tag-mikrotik"><span>🔮</span><span>MIKROTIK ROUTERS &amp; REMOTE BRANCH GATEWAYS (${mikrotiks.length})</span></span></td>`;
+        tbody.appendChild(trHeaderMikro);
+        renderDeviceRows(mikrotiks, tbody);
+      }
+
+      if (switches.length > 0) {
+        const trHeaderSwitch = document.createElement('tr');
+        trHeaderSwitch.className = 'category-header-row';
+        trHeaderSwitch.innerHTML = `<td colspan="9"><span class="header-tag-switch"><span>🟤</span><span>10G MANAGED SWITCHES &amp; AGGREGATION LAYER (${switches.length})</span></span></td>`;
+        tbody.appendChild(trHeaderSwitch);
+        renderDeviceRows(switches, tbody);
+      }
+    }
+
+    function renderIncidentLog() {
+      const container = document.getElementById('incidentList');
+      const badge = document.getElementById('incidentCountBadge');
+      if (!container) return;
+      container.innerHTML = '';
+      badge.innerText = `(${incidentEvents.length} Recorded)`;
+
+      if (incidentEvents.length === 0) {
+        container.innerHTML = `<div class="empty-incident">✨ No active or unacknowledged incidents recorded.</div>`;
+        return;
+      }
+
+      incidentEvents.forEach(evt => {
+        const isResolved = evt.resolved === true;
+        const item = document.createElement('div');
+        item.className = `incident-item ${isResolved ? 'resolved' : ''}`;
+        item.innerHTML = `
+          <div class="incident-meta">
+            <div class="incident-headline">
+              <span>${isResolved ? '🟢' : '🔴'}</span>
+              <span>${evt.device} (${evt.ip}) — ${evt.type}</span>
+              <span style="font-size: 0.72rem; color: ${isResolved ? '#34d399' : '#f87171'}; font-weight: 700; padding: 0.15rem 0.5rem; background: rgba(255,255,255,0.06); border-radius: 4px;">
+                ${evt.duration}
+              </span>
+            </div>
+            <div class="incident-desc">${evt.details}</div>
+            <div class="incident-time">Started: ${evt.start_time} (PHT) ${evt.end_time ? `• Restored: ${evt.end_time}` : ''}</div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function toggleDrawer(name) {
+      expandedDevice = (expandedDevice === name) ? null : name;
+      renderTable();
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.getAttribute('data-filter') || 'all';
+        renderTable();
+      });
+    });
+
+    // Auto-restore session from sessionStorage
+    async function autoRestoreSession() {
+      const user = sessionStorage.getItem('noc_cloud_user');
+      const pass = sessionStorage.getItem('noc_cloud_pass');
+      if (user && pass) {
+        try {
+          const res = await fetch('noc_fleet_encrypted.json?t=' + Date.now());
+          if (res.ok) {
+            const encryptedData = await res.json();
+            const decrypted = await decryptPayload(encryptedData, pass);
+            document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('dashboardContainer').style.display = 'flex';
+            document.getElementById('userNameTag').innerText = user;
+            applyDecryptedData(decrypted);
+          }
+        } catch (e) {}
+      }
+    }
+
+    autoRestoreSession();
+
+    // Background auto-refresh every 30s
+    setInterval(async () => {
+      const pass = sessionStorage.getItem('noc_cloud_pass');
+      if (pass) {
+        try {
+          const res = await fetch('noc_fleet_encrypted.json?t=' + Date.now());
+          if (res.ok) {
+            const encryptedData = await res.json();
+            const decrypted = await decryptPayload(encryptedData, pass);
+            applyDecryptedData(decrypted);
+          }
+        } catch (e) {}
+      }
+    }, 30000);
+  </script>
+</body>
+</html>
