@@ -1,6 +1,6 @@
-// Fleming WiFi Speedtest Dashboard Engine - Strict Authentic Logs Mode (No Filler Data)
+// Fleming WiFi Speedtest Dashboard Engine - Ultra-Fast Async Logs Engine
 
-let selectedDate = new Date(); // Default to Today or Latest Active Date
+let selectedDate = new Date();
 let calendarCurrentMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
 
 let coreRouterLogs = [];
@@ -11,23 +11,28 @@ let initialDateLoaded = false;
 // Initialize Dashboard
 document.addEventListener('DOMContentLoaded', async () => {
   setupEventListeners();
-  await loadRealLogData();
   
-  // Auto-select latest active date if today has no logs initially
-  if (!initialDateLoaded) {
-    autoSelectLatestActiveDate();
-    initialDateLoaded = true;
-  }
-  
+  // 1. Instant Render: Fetch latest.json first (Instant < 50ms)
+  await loadInstantLatestData();
   renderCalendar();
   updateDashboard();
   setupSynchronizedScrolling();
 
-  // Auto refresh log data every 15 seconds
-  setInterval(async () => {
-    await loadRealLogData();
+  // 2. Fast Async Fetch: Load recent historical log files in parallel background
+  loadHistoricalDataAsync().then(() => {
+    if (!initialDateLoaded) {
+      autoSelectLatestActiveDate();
+      initialDateLoaded = true;
+      renderCalendar();
+    }
     updateDashboard();
-  }, 15000);
+  });
+
+  // Auto-refresh latest test data every 30 seconds
+  setInterval(async () => {
+    await loadInstantLatestData();
+    updateDashboard();
+  }, 30000);
 });
 
 // Setup Control Event Listeners
@@ -77,7 +82,6 @@ function setupEventListeners() {
 function setupSynchronizedScrolling() {
   const containerLeft = document.getElementById('scrollContainerCore');
   const containerRight = document.getElementById('scrollContainerHome');
-  
   if (!containerLeft || !containerRight) return;
   
   let isSyncingLeft = false;
@@ -113,7 +117,6 @@ function autoSelectLatestActiveDate() {
   );
   
   if (todayLogs.length === 0) {
-    // Sort descending to find most recent log date
     const sorted = [...allLogs].sort((a, b) => b.dateObj - a.dateObj);
     if (sorted[0]) {
       selectedDate = new Date(sorted[0].dateObj);
@@ -122,106 +125,107 @@ function autoSelectLatestActiveDate() {
   }
 }
 
-// Load Strictly Authentic Log Data
-async function loadRealLogData() {
-  coreRouterLogs = [];
-  homeMikroLogs = [];
-
-  let fetchedLogs = [];
-
-  // Try 1: Fetch static latest.json files from GitHub Pages CDN (Instant, 0 Rate Limit)
+// 1. Instant Load from CDN latest.json (0-50ms)
+async function loadInstantLatestData() {
   try {
     const cb = Date.now();
     const [resCore, resHome] = await Promise.all([
       fetch(`Device Speedtest Logs/CoreRouter/latest.json?t=${cb}`),
       fetch(`Device Speedtest Logs/HomeMikro/latest.json?t=${cb}`)
     ]);
+    
     if (resCore.ok) {
       const dataCore = await resCore.json();
-      fetchedLogs.push(dataCore);
+      insertLogEntry(dataCore);
     }
     if (resHome.ok) {
       const dataHome = await resHome.json();
-      fetchedLogs.push(dataHome);
+      insertLogEntry(dataHome);
     }
   } catch (err) {
-    console.warn("Could not fetch relative latest.json, falling back to GitHub API...", err);
+    console.warn("Could not load relative latest.json:", err);
   }
-
-  // Try 2: Fetch full historical log files via GitHub API if available
-  try {
-    const apiLogs = await fetchFromGitHubAPI();
-    if (apiLogs && apiLogs.length > 0) {
-      const existingKeys = new Set(fetchedLogs.map(l => `${l.device}_${l.date || l.timestamp}_${l.time || ''}`));
-      apiLogs.forEach(item => {
-        const key = `${item.device}_${item.date || item.timestamp}_${item.time || ''}`;
-        if (!existingKeys.has(key)) {
-          fetchedLogs.push(item);
-          existingKeys.add(key);
-        }
-      });
-    }
-  } catch (err) {
-    console.warn("GitHub API fetch fallback warning:", err);
-  }
-
-  // Parse and separate strictly authentic logs
-  fetchedLogs.forEach(entry => {
-    const rawTs = entry.timestamp || (entry.date && entry.time ? `${entry.date} ${entry.time}` : null);
-    const dateObj = parseTimestamp(rawTs);
-    const item = {
-      device: entry.device,
-      timestamp: rawTs || entry.timestamp,
-      dateObj: dateObj,
-      speed_mbps: Number(entry.speed_mbps) || 0,
-      unit: entry.unit || 'Mbps',
-      target: entry.target || (entry.device === 'CoreRouter' ? 'Manila Cloudflare CDN' : 'Backbone Transit (VLAN 100)')
-    };
-
-    if (entry.device === 'CoreRouter') {
-      coreRouterLogs.push(item);
-    } else if (entry.device === 'HomeMikro') {
-      homeMikroLogs.push(item);
-    }
-  });
-
-  // Sort logs chronologically
-  coreRouterLogs.sort((a, b) => a.dateObj - b.dateObj);
-  homeMikroLogs.sort((a, b) => a.dateObj - b.dateObj);
 }
 
-// Fetch logs directly via GitHub API for CoreRouter and HomeMikro directories
-async function fetchFromGitHubAPI() {
+// Helper: Insert single log entry avoiding duplicates
+function insertLogEntry(entry) {
+  if (!entry || !entry.device) return;
+  const rawTs = entry.timestamp || (entry.date && entry.time ? `${entry.date} ${entry.time}` : null);
+  const dateObj = parseTimestamp(rawTs);
+  const item = {
+    device: entry.device,
+    timestamp: rawTs || entry.timestamp,
+    dateObj: dateObj,
+    speed_mbps: Number(entry.speed_mbps) || 0,
+    unit: entry.unit || 'Mbps',
+    target: entry.target || (entry.device === 'CoreRouter' ? 'Manila Cloudflare CDN' : 'Backbone Transit')
+  };
+
+  const targetArray = entry.device === 'CoreRouter' ? coreRouterLogs : homeMikroLogs;
+  const exists = targetArray.some(l => l.dateObj.getTime() === dateObj.getTime());
+  if (!exists) {
+    targetArray.push(item);
+    targetArray.sort((a, b) => a.dateObj - b.dateObj);
+  }
+}
+
+// 2. High-Speed Parallel Background Fetch for Historical Logs
+async function loadHistoricalDataAsync() {
   const repoOwner = 'flemin';
   const repoName = 'Fleming-Wifi-Speedtest';
-  const results = [];
-
   const devices = ['CoreRouter', 'HomeMikro'];
 
-  for (const dev of devices) {
+  // Check sessionStorage cache first for instant repeat visits
+  const cacheKey = 'fleming_speedtest_logs_v1';
+  const cached = sessionStorage.getItem(cacheKey);
+  if (cached) {
+    try {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        parsed.forEach(insertLogEntry);
+      }
+    } catch {}
+  }
+
+  // Fetch directory listings in parallel
+  const fetchPromises = devices.map(async (dev) => {
     try {
       const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/Device%20Speedtest%20Logs/${dev}`;
       const res = await fetch(url);
-      if (!res.ok) continue;
+      if (!res.ok) return [];
 
       const files = await res.json();
-      if (!Array.isArray(files)) continue;
+      if (!Array.isArray(files)) return [];
 
-      for (const file of files) {
-        if (file.name.endsWith('.json')) {
-          const contentRes = await fetch(file.download_url);
-          if (contentRes.ok) {
-            const data = await contentRes.json();
-            results.push(data);
-          }
-        }
-      }
+      // Filter only recent .json logs (limit to the 30 most recent files per device for max speed)
+      const jsonFiles = files.filter(f => f.name.endsWith('.json') && !f.name.includes('test')).slice(-30);
+
+      // Fetch all JSON files in parallel batches
+      const fileContents = await Promise.all(
+        jsonFiles.map(async (file) => {
+          try {
+            const contentRes = await fetch(file.download_url);
+            if (contentRes.ok) return await contentRes.json();
+          } catch {}
+          return null;
+        })
+      );
+
+      return fileContents.filter(Boolean);
     } catch (e) {
-      console.error(`Error fetching GitHub API logs for ${dev}:`, e);
+      console.error(`Error fetching logs for ${dev}:`, e);
+      return [];
     }
-  }
+  });
 
-  return results;
+  const results = await Promise.all(fetchPromises);
+  const allFetched = results.flat();
+  allFetched.forEach(insertLogEntry);
+
+  // Save to session cache
+  try {
+    sessionStorage.setItem(cacheKey, JSON.stringify([...coreRouterLogs, ...homeMikroLogs]));
+  } catch {}
 }
 
 function parseTimestamp(tsStr) {
@@ -368,7 +372,7 @@ function updateDashboard() {
 
 // Render Live Speedometer Gauges
 function renderLiveGauges() {
-  const arcLength = 210; // SVG dasharray length for 200-degree arc
+  const arcLength = 210;
   
   // 1. CoreRouter Live Gauge
   const latestCore = coreRouterLogs.length > 0 ? coreRouterLogs[coreRouterLogs.length - 1] : null;
@@ -432,7 +436,7 @@ function renderDualTables() {
       <tr>
         <td colspan="3" style="text-align: center; color: #64748b; padding: 2rem 1rem;">
           No CoreRouter speed test logs recorded for this date.<br>
-          <small style="color: #475569;">Scheduled tests run automatically every 5 minutes.</small>
+          <small style="color: #475569;">Scheduled tests run automatically every 30 minutes.</small>
         </td>
       </tr>
     `;
@@ -460,7 +464,7 @@ function renderDualTables() {
       <tr>
         <td colspan="3" style="text-align: center; color: #64748b; padding: 2rem 1rem;">
           No HomeMikro speed test logs recorded for this date.<br>
-          <small style="color: #475569;">Scheduled tests run automatically every 5 minutes.</small>
+          <small style="color: #475569;">Scheduled tests run automatically every 30 minutes.</small>
         </td>
       </tr>
     `;
@@ -497,26 +501,21 @@ function render7DayMetrics() {
     return;
   }
   
-  // 1. Average Speed
   const totalSpeed = allLogs.reduce((acc, l) => acc + l.speed_mbps, 0);
   const avgSpeed = Math.round(totalSpeed / allLogs.length);
   
-  // 2. Slow Speeds (< 200 MBPS)
   const slowLogs = allLogs.filter(l => l.speed_mbps > 0 && l.speed_mbps < 200);
   const slowCount = slowLogs.length;
-  const slowHours = (slowCount * 5 / 60).toFixed(1);
+  const slowHours = (slowCount * 30 / 60).toFixed(1);
   
-  // 3. Outages (0 MBPS)
   const outageLogs = allLogs.filter(l => l.speed_mbps === 0);
   const outageCount = outageLogs.length;
-  const outageMinutes = outageCount * 5;
+  const outageMinutes = outageCount * 30;
   
-  // 4. Compliance Breakdown
   const compliantLogs = allLogs.filter(l => l.speed_mbps >= 200);
   const compliantPercent = ((compliantLogs.length / allLogs.length) * 100).toFixed(1);
   const slowPercent = (100 - parseFloat(compliantPercent)).toFixed(1);
   
-  // Update UI Elements
   document.getElementById('metricAvgSpeed').innerText = `${avgSpeed} Mbps`;
   document.getElementById('metricSlowSpeed').innerText = `${slowHours} hrs (${slowCount} tests)`;
   document.getElementById('metricOutage').innerText = `${outageMinutes} mins (${outageCount} events)`;
@@ -525,7 +524,7 @@ function render7DayMetrics() {
   document.getElementById('metricComplianceSub').innerText = `${compliantPercent}% ≥ 200Mbps | ${slowPercent}% < 200Mbps (${allLogs.length} authentic tests recorded)`;
 }
 
-// 7-Day Chart Renderer
+// 7-Day Speed Trend Chart (Strict 30-Minute Averages)
 function render30MinAverageChart() {
   const canvas = document.getElementById('speedTrendChart');
   if (!canvas) return;
@@ -538,9 +537,12 @@ function render30MinAverageChart() {
     return;
   }
   
+  // Collect 30-minute time buckets across the last 7 days
   const labelsMap = new Map();
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
   
-  allLogs.forEach(l => {
+  allLogs.filter(l => l.dateObj >= sevenDaysAgo).forEach(l => {
     const d = new Date(l.dateObj);
     d.setMinutes(Math.floor(d.getMinutes() / 30) * 30, 0, 0);
     const key = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
@@ -579,7 +581,7 @@ function render30MinAverageChart() {
       labels: labels,
       datasets: [
         {
-          label: 'CoreRouter (Direct ISP1 WAN)',
+          label: 'CoreRouter (ISP WAN)',
           data: core30MinAvg,
           borderColor: '#38bdf8',
           backgroundColor: 'rgba(56, 189, 248, 0.15)',
@@ -609,6 +611,9 @@ function render30MinAverageChart() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      animation: {
+        duration: 400 // Fast snappier animation
+      },
       interaction: {
         mode: 'index',
         intersect: false
@@ -639,7 +644,10 @@ function render30MinAverageChart() {
           grid: { color: 'rgba(255, 255, 255, 0.04)' },
           ticks: {
             color: '#64748b',
-            font: { size: 11 }
+            font: { size: 11 },
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 14
           }
         },
         y: {
