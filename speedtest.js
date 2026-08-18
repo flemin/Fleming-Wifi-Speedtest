@@ -36,10 +36,12 @@ let coreRouterLogs = [];
 let homeMikroLogs = [];
 let chartInstance = null;
 let initialDateLoaded = false;
+let currentChartRange = '7d'; // '24h', '7d', '14d', '30d'
 
 // Initialize Dashboard
 document.addEventListener('DOMContentLoaded', async () => {
   setupEventListeners();
+  setupRangeSelectorListeners();
   
   // 1. Instant Render: Fetch latest.json first (Instant < 50ms)
   await loadInstantLatestData();
@@ -644,8 +646,29 @@ function render7DayMetrics() {
   document.getElementById('metricComplianceSub').innerText = `${compliantPercent}% ≥ 200Mbps | ${slowPercent}% < 200Mbps (${allLogs.length} authentic tests recorded)`;
 }
 
-// 7-Day Speed Trend Chart (Strict Manila Time Slots)
-function render30MinAverageChart() {
+function setupRangeSelectorListeners() {
+  const buttons = document.querySelectorAll('.range-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentChartRange = btn.getAttribute('data-range') || '7d';
+      renderAdaptiveTrendChart();
+    });
+  });
+}
+
+// Update All Views
+function updateDashboard() {
+  renderLiveGauges();
+  renderCongestionHeatmap();
+  renderDualTables();
+  render7DayMetrics();
+  renderAdaptiveTrendChart();
+}
+
+// Adaptive Trend Chart Renderer with Dynamic Bucket Sampling
+function renderAdaptiveTrendChart() {
   const canvas = document.getElementById('speedTrendChart');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -657,47 +680,104 @@ function render30MinAverageChart() {
     return;
   }
   
-  const labelsMap = new Map();
   const now = new Date();
-  const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+  let cutoffTime = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+  let bucketMinutes = 30;
+  let titleText = '7-Day Speed Trend (30-Min Averages)';
+  let subtitleText = 'Aggregated in 30-minute increments across 7 days for balanced rolling trend';
+
+  if (currentChartRange === '24h') {
+    cutoffTime = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+    bucketMinutes = 15;
+    titleText = '24-Hour Speed Trend (15-Min Averages)';
+    subtitleText = 'Aggregated in 15-minute increments for high-precision short-term analysis';
+  } else if (currentChartRange === '7d') {
+    cutoffTime = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+    bucketMinutes = 30;
+    titleText = '7-Day Speed Trend (30-Min Averages)';
+    subtitleText = 'Aggregated in 30-minute increments across 7 days (~336 max data points)';
+  } else if (currentChartRange === '14d') {
+    cutoffTime = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
+    bucketMinutes = 60;
+    titleText = '14-Day Speed Trend (1-Hour Averages)';
+    subtitleText = 'Aggregated in 1-hour increments across 2 weeks (~336 max data points)';
+  } else if (currentChartRange === '30d') {
+    cutoffTime = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+    bucketMinutes = 240; // 4 hours
+    titleText = '30-Day Speed Trend (4-Hour Averages)';
+    subtitleText = 'Aggregated in 4-hour increments across 1 month (~180 max data points)';
+  }
+
+  // Update UI titles
+  const titleElem = document.getElementById('chartTitle');
+  const subElem = document.getElementById('chartSubtitle');
+  if (titleElem) titleElem.innerText = titleText;
+  if (subElem) subElem.innerText = subtitleText;
+
+  const labelsMap = new Map();
   
-  allLogs.filter(l => l.dateObj >= sevenDaysAgo).forEach(l => {
+  allLogs.filter(l => l.dateObj >= cutoffTime).forEach(l => {
     const m = l.manila;
-    const roundedMin = Math.floor(m.minute / 30) * 30;
-    const timeKey = `${m.month+1}/${m.day} ${String(m.hour).padStart(2,'0')}:${String(roundedMin).padStart(2,'0')}`;
-    const sortVal = new Date(Date.UTC(m.year, m.month, m.day, m.hour, roundedMin, 0)).getTime();
+    let roundedHour = m.hour;
+    let roundedMin = 0;
+
+    if (bucketMinutes < 60) {
+      roundedMin = Math.floor(m.minute / bucketMinutes) * bucketMinutes;
+    } else {
+      const hoursPerBucket = bucketMinutes / 60;
+      roundedHour = Math.floor(m.hour / hoursPerBucket) * hoursPerBucket;
+    }
+
+    const timeKey = bucketMinutes >= 1440 
+      ? `${m.month+1}/${m.day}` 
+      : `${m.month+1}/${m.day} ${String(roundedHour).padStart(2,'0')}:${String(roundedMin).padStart(2,'0')}`;
+      
+    const sortVal = new Date(Date.UTC(m.year, m.month, m.day, roundedHour, roundedMin, 0)).getTime();
     
     if (!labelsMap.has(timeKey)) {
-      labelsMap.set(timeKey, { timeKey: timeKey, sortVal: sortVal, mYear: m.year, mMonth: m.month, mDay: m.day, mHour: m.hour, mMin: roundedMin });
+      labelsMap.set(timeKey, { 
+        timeKey: timeKey, 
+        sortVal: sortVal, 
+        mYear: m.year, 
+        mMonth: m.month, 
+        mDay: m.day, 
+        mHour: roundedHour, 
+        mMin: roundedMin,
+        bucketMins: bucketMinutes
+      });
     }
   });
   
   const sortedTimeSlots = Array.from(labelsMap.values()).sort((a, b) => a.sortVal - b.sortVal);
   const labels = sortedTimeSlots.map(s => s.timeKey);
   
-  const core30MinAvg = [];
-  const home30MinAvg = [];
+  const coreAvgList = [];
+  const homeAvgList = [];
   
   sortedTimeSlots.forEach(slot => {
-    const logsCore = coreRouterLogs.filter(l => 
-      l.manila.year === slot.mYear &&
-      l.manila.month === slot.mMonth &&
-      l.manila.day === slot.mDay &&
-      l.manila.hour === slot.mHour &&
-      Math.floor(l.manila.minute / 30) * 30 === slot.mMin
-    );
+    const logsCore = coreRouterLogs.filter(l => {
+      if (l.manila.year !== slot.mYear || l.manila.month !== slot.mMonth || l.manila.day !== slot.mDay) return false;
+      if (slot.bucketMins < 60) {
+        return l.manila.hour === slot.mHour && Math.floor(l.manila.minute / slot.bucketMins) * slot.bucketMins === slot.mMin;
+      } else {
+        const hpb = slot.bucketMins / 60;
+        return Math.floor(l.manila.hour / hpb) * hpb === slot.mHour;
+      }
+    });
     const avgCore = logsCore.length > 0 ? Math.round(logsCore.reduce((a, b) => a + b.speed_mbps, 0) / logsCore.length) : null;
-    core30MinAvg.push(avgCore);
+    coreAvgList.push(avgCore);
     
-    const logsHome = homeMikroLogs.filter(l => 
-      l.manila.year === slot.mYear &&
-      l.manila.month === slot.mMonth &&
-      l.manila.day === slot.mDay &&
-      l.manila.hour === slot.mHour &&
-      Math.floor(l.manila.minute / 30) * 30 === slot.mMin
-    );
+    const logsHome = homeMikroLogs.filter(l => {
+      if (l.manila.year !== slot.mYear || l.manila.month !== slot.mMonth || l.manila.day !== slot.mDay) return false;
+      if (slot.bucketMins < 60) {
+        return l.manila.hour === slot.mHour && Math.floor(l.manila.minute / slot.bucketMins) * slot.bucketMins === slot.mMin;
+      } else {
+        const hpb = slot.bucketMins / 60;
+        return Math.floor(l.manila.hour / hpb) * hpb === slot.mHour;
+      }
+    });
     const avgHome = logsHome.length > 0 ? Math.round(logsHome.reduce((a, b) => a + b.speed_mbps, 0) / logsHome.length) : null;
-    home30MinAvg.push(avgHome);
+    homeAvgList.push(avgHome);
   });
   
   if (chartInstance) {
@@ -711,11 +791,11 @@ function render30MinAverageChart() {
       datasets: [
         {
           label: 'CoreRouter (ISP WAN)',
-          data: core30MinAvg,
+          data: coreAvgList,
           borderColor: '#38bdf8',
           backgroundColor: 'rgba(56, 189, 248, 0.15)',
           borderWidth: 3,
-          pointRadius: 4,
+          pointRadius: labels.length > 150 ? 2 : 4,
           pointHoverRadius: 6,
           pointBackgroundColor: '#38bdf8',
           spanGaps: true,
@@ -724,11 +804,11 @@ function render30MinAverageChart() {
         },
         {
           label: 'HomeMikro (Backbone Transit)',
-          data: home30MinAvg,
+          data: homeAvgList,
           borderColor: '#c084fc',
           backgroundColor: 'rgba(192, 132, 252, 0.15)',
           borderWidth: 3,
-          pointRadius: 4,
+          pointRadius: labels.length > 150 ? 2 : 4,
           pointHoverRadius: 6,
           pointBackgroundColor: '#c084fc',
           spanGaps: true,
@@ -741,7 +821,7 @@ function render30MinAverageChart() {
       responsive: true,
       maintainAspectRatio: false,
       animation: {
-        duration: 400
+        duration: 350
       },
       interaction: {
         mode: 'index',
