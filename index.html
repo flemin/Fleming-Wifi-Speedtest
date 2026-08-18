@@ -179,14 +179,20 @@
         </div>
       </div>
 
-      <!-- Last 7 Days (30-Min Increments) Speed Graph Card -->
+      <!-- Speed Graph Card with Adaptive Range Selector -->
       <div class="glass-card chart-card">
         <div class="chart-header">
           <div>
             <div class="card-title">
-              <span>📈</span> 7-Day Speed Trend (30-Min Averages)
+              <span>📈</span> <span id="chartTitle">7-Day Speed Trend (30-Min Averages)</span>
             </div>
-            <div class="chart-subtitle">Aggregated in 30-minute increments across 7 days for fast, lightweight rendering</div>
+            <div class="chart-subtitle" id="chartSubtitle">Aggregated in 30-minute increments across 7 days for fast, lightweight rendering</div>
+          </div>
+          <div class="chart-range-controls" id="chartRangeControls">
+            <button class="range-btn" data-range="24h">24h (15m)</button>
+            <button class="range-btn active" data-range="7d">7d (30m)</button>
+            <button class="range-btn" data-range="14d">14d (1h)</button>
+            <button class="range-btn" data-range="30d">30d (4h)</button>
           </div>
         </div>
         
