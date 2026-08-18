@@ -1,7 +1,36 @@
-// Fleming WiFi Speedtest Dashboard Engine - Enhanced Features Edition
+// Fleming WiFi Speedtest Dashboard Engine - Strict Manila (UTC+8) Timezone Edition
 
-let selectedDate = new Date();
-let calendarCurrentMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+const MANILA_TZ = 'Asia/Manila';
+
+// Helper: Get Manila date components for any date
+function getManilaParts(d) {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: MANILA_TZ,
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false
+  });
+  const parts = formatter.formatToParts(d);
+  const map = {};
+  parts.forEach(p => map[p.type] = p.value);
+  return {
+    year: parseInt(map.year, 10),
+    month: parseInt(map.month, 10) - 1, // 0-indexed
+    day: parseInt(map.day, 10),
+    hour: parseInt(map.hour === '24' ? '0' : map.hour, 10),
+    minute: parseInt(map.minute, 10),
+    second: parseInt(map.second, 10)
+  };
+}
+
+// Current Manila Date initialization
+let currentManilaNow = getManilaParts(new Date());
+let selectedDate = new Date(Date.UTC(currentManilaNow.year, currentManilaNow.month, currentManilaNow.day, 12, 0, 0));
+let calendarCurrentMonth = new Date(Date.UTC(currentManilaNow.year, currentManilaNow.month, 1, 12, 0, 0));
 
 let coreRouterLogs = [];
 let homeMikroLogs = [];
@@ -64,41 +93,40 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Setup Control Event Listeners
 function setupEventListeners() {
   document.getElementById('prevMonthBtn').addEventListener('click', () => {
-    calendarCurrentMonth.setMonth(calendarCurrentMonth.getMonth() - 1);
+    calendarCurrentMonth.setUTCMonth(calendarCurrentMonth.getUTCMonth() - 1);
     renderCalendar();
   });
   
   document.getElementById('nextMonthBtn').addEventListener('click', () => {
-    calendarCurrentMonth.setMonth(calendarCurrentMonth.getMonth() + 1);
+    calendarCurrentMonth.setUTCMonth(calendarCurrentMonth.getUTCMonth() + 1);
     renderCalendar();
   });
   
   document.getElementById('btnToday').addEventListener('click', () => {
-    selectedDate = new Date();
-    calendarCurrentMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+    const nowParts = getManilaParts(new Date());
+    selectedDate = new Date(Date.UTC(nowParts.year, nowParts.month, nowParts.day, 12, 0, 0));
+    calendarCurrentMonth = new Date(Date.UTC(nowParts.year, nowParts.month, 1, 12, 0, 0));
     renderCalendar();
     updateDashboard();
   });
   
   document.getElementById('btnYesterday').addEventListener('click', () => {
-    const yesterday = new Date(selectedDate);
-    yesterday.setDate(yesterday.getDate() - 1);
-    selectedDate = yesterday;
-    calendarCurrentMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+    selectedDate.setUTCDate(selectedDate.getUTCDate() - 1);
+    calendarCurrentMonth = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), 1, 12, 0, 0));
     renderCalendar();
     updateDashboard();
   });
   
   document.getElementById('btnPrevDay').addEventListener('click', () => {
-    selectedDate.setDate(selectedDate.getDate() - 1);
-    calendarCurrentMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+    selectedDate.setUTCDate(selectedDate.getUTCDate() - 1);
+    calendarCurrentMonth = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), 1, 12, 0, 0));
     renderCalendar();
     updateDashboard();
   });
   
   document.getElementById('btnNextDay').addEventListener('click', () => {
-    selectedDate.setDate(selectedDate.getDate() + 1);
-    calendarCurrentMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+    selectedDate.setUTCDate(selectedDate.getUTCDate() + 1);
+    calendarCurrentMonth = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), 1, 12, 0, 0));
     renderCalendar();
     updateDashboard();
   });
@@ -130,23 +158,24 @@ function setupSynchronizedScrolling() {
   });
 }
 
-// Auto-select latest active date
+// Auto-select latest active date in Manila timezone
 function autoSelectLatestActiveDate() {
   const allLogs = [...coreRouterLogs, ...homeMikroLogs];
   if (allLogs.length === 0) return;
   
-  const today = new Date();
+  const nowParts = getManilaParts(new Date());
   const todayLogs = allLogs.filter(l => 
-    l.dateObj.getFullYear() === today.getFullYear() &&
-    l.dateObj.getMonth() === today.getMonth() &&
-    l.dateObj.getDate() === today.getDate()
+    l.manila.year === nowParts.year &&
+    l.manila.month === nowParts.month &&
+    l.manila.day === nowParts.day
   );
   
   if (todayLogs.length === 0) {
     const sorted = [...allLogs].sort((a, b) => b.dateObj - a.dateObj);
     if (sorted[0]) {
-      selectedDate = new Date(sorted[0].dateObj);
-      calendarCurrentMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+      const topManila = sorted[0].manila;
+      selectedDate = new Date(Date.UTC(topManila.year, topManila.month, topManila.day, 12, 0, 0));
+      calendarCurrentMonth = new Date(Date.UTC(topManila.year, topManila.month, 1, 12, 0, 0));
     }
   }
 }
@@ -173,15 +202,28 @@ async function loadInstantLatestData() {
   }
 }
 
+// Helper: Parse RouterOS timestamp strictly as Manila Time (UTC+8)
+function parseManilaTimestamp(tsStr) {
+  if (!tsStr) return new Date();
+  const clean = tsStr.trim().replace(' ', 'T');
+  // If no timezone offset present, append Manila (+08:00)
+  const withTz = clean.includes('+') || clean.endsWith('Z') ? clean : `${clean}+08:00`;
+  const d = new Date(withTz);
+  return isNaN(d.getTime()) ? new Date() : d;
+}
+
 // Helper: Insert single log entry avoiding duplicates
 function insertLogEntry(entry) {
   if (!entry || !entry.device) return;
   const rawTs = entry.timestamp || (entry.date && entry.time ? `${entry.date} ${entry.time}` : null);
-  const dateObj = parseTimestamp(rawTs);
+  const dateObj = parseManilaTimestamp(rawTs);
+  const manilaParts = getManilaParts(dateObj);
+  
   const item = {
     device: entry.device,
     timestamp: rawTs || entry.timestamp,
     dateObj: dateObj,
+    manila: manilaParts,
     speed_mbps: Number(entry.speed_mbps) || 0,
     unit: entry.unit || 'Mbps',
     ping_ms: Number(entry.ping_ms) || (entry.device === 'CoreRouter' ? 18 : 1),
@@ -203,7 +245,7 @@ async function loadHistoricalDataAsync() {
   const repoName = 'Fleming-Wifi-Speedtest';
   const devices = ['CoreRouter', 'HomeMikro'];
 
-  const cacheKey = 'fleming_speedtest_logs_v1';
+  const cacheKey = 'fleming_speedtest_logs_v2';
   const cached = sessionStorage.getItem(cacheKey);
   if (cached) {
     try {
@@ -251,13 +293,6 @@ async function loadHistoricalDataAsync() {
   } catch {}
 }
 
-function parseTimestamp(tsStr) {
-  if (!tsStr) return new Date();
-  const normalized = tsStr.replace(' ', 'T');
-  const d = new Date(normalized);
-  return isNaN(d.getTime()) ? new Date() : d;
-}
-
 function formatRelativeTime(dateObj) {
   const now = new Date();
   const diffMs = now - dateObj;
@@ -268,20 +303,22 @@ function formatRelativeTime(dateObj) {
   if (diffSec < 45) return 'Just now';
   if (diffMin < 60) return `${diffMin} min${diffMin === 1 ? '' : 's'} ago`;
   if (diffHour < 24) return `${diffHour} hr${diffHour === 1 ? '' : 's'} ago`;
-  return dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return dateObj.toLocaleDateString('en-US', { timeZone: MANILA_TZ, month: 'short', day: 'numeric' });
 }
 
-function formatHumanReadableTime(dateObj) {
+function formatHumanReadableManila(dateObj) {
   return dateObj.toLocaleDateString('en-US', {
+    timeZone: MANILA_TZ,
     month: 'short',
     day: 'numeric',
     year: 'numeric'
   }) + ' • ' + dateObj.toLocaleTimeString('en-US', {
+    timeZone: MANILA_TZ,
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
     hour12: true
-  });
+  }) + ' (PHT)';
 }
 
 function getSpeedColorStyle(speed) {
@@ -309,7 +346,7 @@ function getSpeedColorStyle(speed) {
   }
 }
 
-// Graphical Calendar Renderer
+// Graphical Calendar Renderer (Strict Manila Timezone)
 function renderCalendar() {
   const monthTitle = document.getElementById('calMonthYear');
   const grid = document.getElementById('calGrid');
@@ -318,7 +355,10 @@ function renderCalendar() {
   const monthNames = ["January", "February", "March", "April", "May", "June",
                       "July", "August", "September", "October", "November", "December"];
                       
-  monthTitle.innerText = `${monthNames[calendarCurrentMonth.getMonth()]} ${calendarCurrentMonth.getFullYear()}`;
+  const calYear = calendarCurrentMonth.getUTCFullYear();
+  const calMonth = calendarCurrentMonth.getUTCMonth();
+  
+  monthTitle.innerText = `${monthNames[calMonth]} ${calYear}`;
   grid.innerHTML = '';
   
   const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -329,12 +369,9 @@ function renderCalendar() {
     grid.appendChild(header);
   });
   
-  const year = calendarCurrentMonth.getFullYear();
-  const month = calendarCurrentMonth.getMonth();
-  
-  const firstDayIndex = new Date(year, month, 1).getDay();
-  const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
-  const prevMonthDays = new Date(year, month, 0).getDate();
+  const firstDayIndex = new Date(Date.UTC(calYear, calMonth, 1)).getUTCDay();
+  const totalDaysInMonth = new Date(Date.UTC(calYear, calMonth + 1, 0)).getUTCDate();
+  const prevMonthDays = new Date(Date.UTC(calYear, calMonth, 0)).getUTCDate();
   
   for (let i = firstDayIndex - 1; i >= 0; i--) {
     const cell = document.createElement('div');
@@ -343,28 +380,26 @@ function renderCalendar() {
     grid.appendChild(cell);
   }
   
-  const today = new Date();
+  const manilaToday = getManilaParts(new Date());
+  const selYear = selectedDate.getUTCFullYear();
+  const selMonth = selectedDate.getUTCMonth();
+  const selDay = selectedDate.getUTCDate();
+  
   for (let day = 1; day <= totalDaysInMonth; day++) {
     const cell = document.createElement('div');
     cell.className = 'cal-day-cell';
     cell.innerText = day;
     
-    const thisDate = new Date(year, month, day);
-    
-    if (thisDate.getFullYear() === selectedDate.getFullYear() &&
-        thisDate.getMonth() === selectedDate.getMonth() &&
-        thisDate.getDate() === selectedDate.getDate()) {
+    if (calYear === selYear && calMonth === selMonth && day === selDay) {
       cell.classList.add('selected');
     }
     
-    if (thisDate.getFullYear() === today.getFullYear() &&
-        thisDate.getMonth() === today.getMonth() &&
-        thisDate.getDate() === today.getDate()) {
+    if (calYear === manilaToday.year && calMonth === manilaToday.month && day === manilaToday.day) {
       cell.classList.add('today');
     }
     
     cell.addEventListener('click', () => {
-      selectedDate = new Date(year, month, day);
+      selectedDate = new Date(Date.UTC(calYear, calMonth, day, 12, 0, 0));
       renderCalendar();
       updateDashboard();
     });
@@ -374,7 +409,7 @@ function renderCalendar() {
   
   const selectedLabel = document.getElementById('selectedDayText');
   if (selectedLabel) {
-    selectedLabel.innerText = `Selected: ${selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`;
+    selectedLabel.innerText = `Selected (PHT): ${selectedDate.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`;
   }
 }
 
@@ -395,7 +430,8 @@ function renderLiveGauges() {
   const latestCore = coreRouterLogs.length > 0 ? coreRouterLogs[coreRouterLogs.length - 1] : null;
   if (latestCore) {
     document.getElementById('coreLiveSpeed').innerText = latestCore.speed_mbps;
-    document.getElementById('coreLastTime').innerText = `${formatRelativeTime(latestCore.dateObj)} (${latestCore.dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})`;
+    const manilaTimeStr = latestCore.dateObj.toLocaleTimeString('en-US', { timeZone: MANILA_TZ, hour: '2-digit', minute:'2-digit' });
+    document.getElementById('coreLastTime').innerText = `${formatRelativeTime(latestCore.dateObj)} (${manilaTimeStr} PHT)`;
     
     const pingPill = document.getElementById('coreLatencyPill');
     if (pingPill) {
@@ -420,7 +456,8 @@ function renderLiveGauges() {
   const latestHome = homeMikroLogs.length > 0 ? homeMikroLogs[homeMikroLogs.length - 1] : null;
   if (latestHome) {
     document.getElementById('homeLiveSpeed').innerText = latestHome.speed_mbps;
-    document.getElementById('homeLastTime').innerText = `${formatRelativeTime(latestHome.dateObj)} (${latestHome.dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})`;
+    const manilaTimeStr = latestHome.dateObj.toLocaleTimeString('en-US', { timeZone: MANILA_TZ, hour: '2-digit', minute:'2-digit' });
+    document.getElementById('homeLastTime').innerText = `${formatRelativeTime(latestHome.dateObj)} (${manilaTimeStr} PHT)`;
     
     const homePingPill = document.getElementById('homeLatencyPill');
     if (homePingPill) {
@@ -437,7 +474,7 @@ function renderLiveGauges() {
   }
 }
 
-// 24-Hour Congestion Heatmap Renderer
+// 24-Hour Congestion Heatmap Renderer (Strict Manila Hours 00..23)
 function renderCongestionHeatmap() {
   const container = document.getElementById('heatmapGrid');
   if (!container) return;
@@ -445,11 +482,12 @@ function renderCongestionHeatmap() {
 
   const allLogs = coreRouterLogs.length > 0 ? coreRouterLogs : homeMikroLogs;
   
-  // Group by hour 00..23
   const hourlyData = Array(24).fill(null).map(() => []);
   allLogs.forEach(l => {
-    const hr = l.dateObj.getHours();
-    hourlyData[hr].push(l.speed_mbps);
+    const hr = l.manila.hour;
+    if (hr >= 0 && hr < 24) {
+      hourlyData[hr].push(l.speed_mbps);
+    }
   });
 
   for (let hr = 0; hr < 24; hr++) {
@@ -463,19 +501,19 @@ function renderCongestionHeatmap() {
     
     let bg = 'rgba(255, 255, 255, 0.05)';
     let text = '--';
-    let titleText = `Hour ${hr}:00: No test data recorded`;
+    let titleText = `Hour ${hr}:00 Manila: No test data recorded`;
 
     if (avg !== null) {
       text = `${avg}M`;
       if (avg >= 200) {
         bg = 'linear-gradient(180deg, #10b981, #059669)';
-        titleText = `Hour ${hr}:00 (${hrDisplay}): Avg ${avg} Mbps (Fast / Optimal)`;
+        titleText = `Hour ${hr}:00 (${hrDisplay} Manila): Avg ${avg} Mbps (Fast / Optimal)`;
       } else if (avg >= 100) {
         bg = 'linear-gradient(180deg, #f59e0b, #d97706)';
-        titleText = `Hour ${hr}:00 (${hrDisplay}): Avg ${avg} Mbps (Moderate Congestion)`;
+        titleText = `Hour ${hr}:00 (${hrDisplay} Manila): Avg ${avg} Mbps (Moderate Congestion)`;
       } else {
         bg = 'linear-gradient(180deg, #ef4444, #b91c1c)';
-        titleText = `Hour ${hr}:00 (${hrDisplay}): Avg ${avg} Mbps (Heavy Peak Throttle)`;
+        titleText = `Hour ${hr}:00 (${hrDisplay} Manila): Avg ${avg} Mbps (Heavy Peak Throttle)`;
       }
     }
 
@@ -489,7 +527,7 @@ function renderCongestionHeatmap() {
   }
 }
 
-// Side-by-Side Dual Tables
+// Side-by-Side Dual Tables (Strict Manila Date Filter)
 function renderDualTables() {
   const tbodyCore = document.getElementById('tbodyCoreRouter');
   const tbodyHome = document.getElementById('tbodyHomeMikro');
@@ -498,20 +536,20 @@ function renderDualTables() {
   tbodyCore.innerHTML = '';
   tbodyHome.innerHTML = '';
   
-  const selYear = selectedDate.getFullYear();
-  const selMonth = selectedDate.getMonth();
-  const selDay = selectedDate.getDate();
+  const selYear = selectedDate.getUTCFullYear();
+  const selMonth = selectedDate.getUTCMonth();
+  const selDay = selectedDate.getUTCDate();
   
   const filteredCore = coreRouterLogs.filter(l => 
-    l.dateObj.getFullYear() === selYear &&
-    l.dateObj.getMonth() === selMonth &&
-    l.dateObj.getDate() === selDay
+    l.manila.year === selYear &&
+    l.manila.month === selMonth &&
+    l.manila.day === selDay
   ).sort((a, b) => b.dateObj - a.dateObj);
   
   const filteredHome = homeMikroLogs.filter(l => 
-    l.dateObj.getFullYear() === selYear &&
-    l.dateObj.getMonth() === selMonth &&
-    l.dateObj.getDate() === selDay
+    l.manila.year === selYear &&
+    l.manila.month === selMonth &&
+    l.manila.day === selDay
   ).sort((a, b) => b.dateObj - a.dateObj);
   
   if (filteredCore.length === 0) {
@@ -529,7 +567,7 @@ function renderDualTables() {
       const colorStyle = getSpeedColorStyle(log.speed_mbps);
       
       tr.innerHTML = `
-        <td class="time-cell">${formatHumanReadableTime(log.dateObj)}</td>
+        <td class="time-cell">${formatHumanReadableManila(log.dateObj)}</td>
         <td>
           <span class="speed-badge" style="background: ${colorStyle.bg}; color: ${colorStyle.text}; border: 1px solid ${colorStyle.border};">
             ${log.speed_mbps} Mbps
@@ -556,7 +594,7 @@ function renderDualTables() {
       const colorStyle = getSpeedColorStyle(log.speed_mbps);
       
       tr.innerHTML = `
-        <td class="time-cell">${formatHumanReadableTime(log.dateObj)}</td>
+        <td class="time-cell">${formatHumanReadableManila(log.dateObj)}</td>
         <td>
           <span class="speed-badge" style="background: ${colorStyle.bg}; color: ${colorStyle.text}; border: 1px solid ${colorStyle.border};">
             ${log.speed_mbps} Mbps
@@ -606,7 +644,7 @@ function render7DayMetrics() {
   document.getElementById('metricComplianceSub').innerText = `${compliantPercent}% ≥ 200Mbps | ${slowPercent}% < 200Mbps (${allLogs.length} authentic tests recorded)`;
 }
 
-// 7-Day Speed Trend Chart
+// 7-Day Speed Trend Chart (Strict Manila Time Slots)
 function render30MinAverageChart() {
   const canvas = document.getElementById('speedTrendChart');
   if (!canvas) return;
@@ -624,30 +662,40 @@ function render30MinAverageChart() {
   const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
   
   allLogs.filter(l => l.dateObj >= sevenDaysAgo).forEach(l => {
-    const d = new Date(l.dateObj);
-    d.setMinutes(Math.floor(d.getMinutes() / 30) * 30, 0, 0);
-    const key = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    if (!labelsMap.has(key)) {
-      labelsMap.set(key, { timeKey: key, dateVal: d });
+    const m = l.manila;
+    const roundedMin = Math.floor(m.minute / 30) * 30;
+    const timeKey = `${m.month+1}/${m.day} ${String(m.hour).padStart(2,'0')}:${String(roundedMin).padStart(2,'0')}`;
+    const sortVal = new Date(Date.UTC(m.year, m.month, m.day, m.hour, roundedMin, 0)).getTime();
+    
+    if (!labelsMap.has(timeKey)) {
+      labelsMap.set(timeKey, { timeKey: timeKey, sortVal: sortVal, mYear: m.year, mMonth: m.month, mDay: m.day, mHour: m.hour, mMin: roundedMin });
     }
   });
   
-  const sortedTimeSlots = Array.from(labelsMap.values()).sort((a, b) => a.dateVal - b.dateVal);
+  const sortedTimeSlots = Array.from(labelsMap.values()).sort((a, b) => a.sortVal - b.sortVal);
   const labels = sortedTimeSlots.map(s => s.timeKey);
   
   const core30MinAvg = [];
   const home30MinAvg = [];
   
   sortedTimeSlots.forEach(slot => {
-    const slotStart = slot.dateVal;
-    const slotEnd = new Date(slotStart);
-    slotEnd.setMinutes(slotEnd.getMinutes() + 30);
-    
-    const logsCore = coreRouterLogs.filter(l => l.dateObj >= slotStart && l.dateObj < slotEnd);
+    const logsCore = coreRouterLogs.filter(l => 
+      l.manila.year === slot.mYear &&
+      l.manila.month === slot.mMonth &&
+      l.manila.day === slot.mDay &&
+      l.manila.hour === slot.mHour &&
+      Math.floor(l.manila.minute / 30) * 30 === slot.mMin
+    );
     const avgCore = logsCore.length > 0 ? Math.round(logsCore.reduce((a, b) => a + b.speed_mbps, 0) / logsCore.length) : null;
     core30MinAvg.push(avgCore);
     
-    const logsHome = homeMikroLogs.filter(l => l.dateObj >= slotStart && l.dateObj < slotEnd);
+    const logsHome = homeMikroLogs.filter(l => 
+      l.manila.year === slot.mYear &&
+      l.manila.month === slot.mMonth &&
+      l.manila.day === slot.mDay &&
+      l.manila.hour === slot.mHour &&
+      Math.floor(l.manila.minute / 30) * 30 === slot.mMin
+    );
     const avgHome = logsHome.length > 0 ? Math.round(logsHome.reduce((a, b) => a + b.speed_mbps, 0) / logsHome.length) : null;
     home30MinAvg.push(avgHome);
   });
