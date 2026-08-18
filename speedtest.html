@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fleming WiFi | MikroTik Speedtest Analytics & Network Monitor</title>
-  <meta name="description" content="Real-time continuous speedtest log monitoring for CoreRouter and HomeMikro devices with live gauge meters, calendar navigation, 7-day 30-min averages, and SLA tracking.">
+  <meta name="description" content="Real-time continuous speedtest log monitoring for CoreRouter and HomeMikro devices with live gauge meters, 24-hour congestion heatmap, latency tracking, 7-day 30-min averages, and SLA tracking.">
   
   <!-- Cache Control Meta Tags -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -61,6 +61,9 @@
               <span id="coreLastTime">Awaiting live test...</span>
             </div>
             <div class="gauge-meta-item">
+              <span class="latency-pill" id="coreLatencyPill">⚡ 18 ms • 0% Loss</span>
+            </div>
+            <div class="gauge-meta-item">
               <span>🌐</span>
               <span id="coreTarget">Manila Cloudflare CDN</span>
             </div>
@@ -94,6 +97,9 @@
               <span id="homeLastTime">Awaiting live test...</span>
             </div>
             <div class="gauge-meta-item">
+              <span class="latency-pill" id="homeLatencyPill">⚡ 1 ms • 0% Loss</span>
+            </div>
+            <div class="gauge-meta-item">
               <span>🌐</span>
               <span id="homeTarget">Backbone Multi-Stream</span>
             </div>
@@ -108,6 +114,24 @@
         </div>
       </div>
 
+    </section>
+
+    <!-- 24-Hour Hourly Congestion Heatmap Section -->
+    <section class="heatmap-section">
+      <div class="glass-card heatmap-card">
+        <div class="chart-header">
+          <div>
+            <div class="card-title">
+              <span>🔥</span> 24-Hour Peak Congestion Heatmap (Hourly Averages)
+            </div>
+            <div class="chart-subtitle">Hourly throughput distribution highlighting peak congestion windows (7 PM - 11 PM) vs off-peak hours</div>
+          </div>
+        </div>
+
+        <div class="heatmap-grid" id="heatmapGrid">
+          <!-- 24 Hourly Cells JS Rendered Here -->
+        </div>
+      </div>
     </section>
 
     <!-- Top Grid: Graphical Calendar + 7-Day Chart -->
@@ -304,6 +328,6 @@
   </div>
 
   <!-- Dashboard JavaScript -->
-  <script src="speedtest.js?v=20260818_fast"></script>
+  <script src="speedtest.js?v=20260818_features"></script>
 </body>
 </html>
