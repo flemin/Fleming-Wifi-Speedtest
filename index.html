@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fleming WiFi | MikroTik Speedtest Analytics & Network Monitor</title>
-  <meta name="description" content="Real-time continuous 5-minute speedtest log monitoring for CoreRouter and HomeMikro devices with live gauge meters, calendar navigation, 7-day 30-min averages, and SLA tracking.">
+  <meta name="description" content="Real-time continuous speedtest log monitoring for CoreRouter and HomeMikro devices with live gauge meters, calendar navigation, 7-day 30-min averages, and SLA tracking.">
   
   <!-- Cache Control Meta Tags -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -27,14 +27,14 @@
         <div class="brand-icon">⚡</div>
         <div class="brand-text">
           <h1>Fleming WiFi Speedtest Monitor</h1>
-          <p>Continuous 5-Minute Dual-Device Performance Tracker &amp; SLA Monitor</p>
+          <p>Continuous Dual-Device Performance Tracker &amp; SLA Monitor</p>
         </div>
       </div>
       
       <div class="nav-status">
         <div class="status-pill">
           <span class="pulse-dot"></span>
-          <span id="liveStatusText">Live 5-Min Staggered Ingest Active</span>
+          <span id="liveStatusText">Live Staggered Ingest Active</span>
         </div>
       </div>
     </header>
@@ -47,7 +47,7 @@
         <div class="gauge-details">
           <div class="gauge-header">
             <span class="device-badge badge-core">CoreRouter</span>
-            <span class="gauge-title">ISP1 Direct WAN Throughput</span>
+            <span class="gauge-title">ISP WAN Throughput</span>
           </div>
           
           <div class="gauge-speed-display">
@@ -69,9 +69,7 @@
         
         <div class="gauge-visual">
           <svg class="gauge-svg" viewBox="0 0 140 110">
-            <!-- Background Arc: 200 deg sweep from 170 deg to 370/10 deg -->
             <path class="gauge-bg-arc" d="M 20 95 A 50 50 0 1 1 120 95" />
-            <!-- Active Speed Arc -->
             <path class="gauge-fill-arc" id="coreGaugeArc" stroke="#38bdf8" stroke-dasharray="210" stroke-dashoffset="210" d="M 20 95 A 50 50 0 1 1 120 95" />
           </svg>
         </div>
@@ -82,7 +80,7 @@
         <div class="gauge-details">
           <div class="gauge-header">
             <span class="device-badge badge-home">HomeMikro</span>
-            <span class="gauge-title">Backbone Transit (VLAN 100)</span>
+            <span class="gauge-title">Backbone Transit</span>
           </div>
           
           <div class="gauge-speed-display">
@@ -148,9 +146,9 @@
         <div class="chart-header">
           <div>
             <div class="card-title">
-              <span>📈</span> Last 7 Days Average Speed Trend
+              <span>📈</span> 7-Day Speed Trend (30-Min Averages)
             </div>
-            <div class="chart-subtitle">Aggregated in 30-minute increments across 7 days total (336 data points)</div>
+            <div class="chart-subtitle">Aggregated in 30-minute increments across 7 days for fast, lightweight rendering</div>
           </div>
         </div>
         
@@ -176,7 +174,7 @@
             <div class="metric-info">
               <span class="metric-label">7-Day Average Speed</span>
               <span class="metric-value" id="metricAvgSpeed">--- Mbps</span>
-              <span class="metric-sub">Across all 5-minute tests</span>
+              <span class="metric-sub">Across all recorded tests</span>
             </div>
           </div>
 
@@ -241,7 +239,7 @@
       
       <div class="tables-header">
         <div class="card-title">
-          <span>📋</span> Dual Synchronized Speedtest Log Tables (5-Min Intervals)
+          <span>📋</span> Dual Synchronized Speedtest Log Tables
         </div>
         <div class="sync-badge">
           <span>🔗</span> Synchronized Table Scroll Enabled
@@ -306,6 +304,6 @@
   </div>
 
   <!-- Dashboard JavaScript -->
-  <script src="speedtest.js?v=20260818_1"></script>
+  <script src="speedtest.js?v=20260818_fast"></script>
 </body>
 </html>
