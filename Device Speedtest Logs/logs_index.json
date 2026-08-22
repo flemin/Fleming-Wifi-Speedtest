@@ -1,23 +1,3502 @@
-﻿[
+[
     {
         "device":  "CoreRouter",
-        "timestamp":  "2026-08-03 16:51:35",
-        "speed_mbps":  472,
-        "unit":  "Mbps",
-        "target":  "Manila Cloudflare CDN"
+        "date":  "2026-08-22",
+        "time":  "10:00:00",
+        "speed_mbps":  "126",
+        "unit":  "Mbps"
     },
     {
         "device":  "CoreRouter",
-        "timestamp":  "2026-08-03 16:48:00",
-        "speed_mbps":  472,
-        "unit":  "Mbps",
-        "target":  "Manila Cloudflare CDN"
+        "date":  "2026-08-22",
+        "time":  "09:30:00",
+        "speed_mbps":  "113",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "09:00:00",
+        "speed_mbps":  "254",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "08:30:00",
+        "speed_mbps":  "137",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "08:00:00",
+        "speed_mbps":  "69",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "07:30:00",
+        "speed_mbps":  "148",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "07:00:00",
+        "speed_mbps":  "206",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "06:30:00",
+        "speed_mbps":  "86",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "06:00:00",
+        "speed_mbps":  "93",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "05:30:00",
+        "speed_mbps":  "49",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "05:00:00",
+        "speed_mbps":  "129",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "04:30:00",
+        "speed_mbps":  "41",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "04:00:00",
+        "speed_mbps":  "65",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "03:30:00",
+        "speed_mbps":  "31",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "03:00:00",
+        "speed_mbps":  "28",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "02:30:00",
+        "speed_mbps":  "51",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "02:00:00",
+        "speed_mbps":  "34",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "01:30:00",
+        "speed_mbps":  "40",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "01:00:00",
+        "speed_mbps":  "46",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "00:30:00",
+        "speed_mbps":  "80",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-22",
+        "time":  "00:00:00",
+        "speed_mbps":  "44",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "23:30:00",
+        "speed_mbps":  "118",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "23:00:00",
+        "speed_mbps":  "93",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "22:30:00",
+        "speed_mbps":  "244",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "22:00:00",
+        "speed_mbps":  "122",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "21:30:00",
+        "speed_mbps":  "227",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "21:00:00",
+        "speed_mbps":  "352",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "20:30:00",
+        "speed_mbps":  "144",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "20:00:00",
+        "speed_mbps":  "300",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "19:30:00",
+        "speed_mbps":  "167",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "19:00:00",
+        "speed_mbps":  "286",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "18:30:00",
+        "speed_mbps":  "192",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "18:00:00",
+        "speed_mbps":  "224",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "17:30:00",
+        "speed_mbps":  "173",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "17:00:00",
+        "speed_mbps":  "293",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "16:30:00",
+        "speed_mbps":  "247",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "16:00:00",
+        "speed_mbps":  "374",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "15:30:00",
+        "speed_mbps":  "140",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "15:00:00",
+        "speed_mbps":  "213",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "14:30:00",
+        "speed_mbps":  "349",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "14:00:00",
+        "speed_mbps":  "327",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "13:30:00",
+        "speed_mbps":  "336",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "13:00:00",
+        "speed_mbps":  "123",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "12:30:00",
+        "speed_mbps":  "196",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "12:00:00",
+        "speed_mbps":  "196",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "11:30:00",
+        "speed_mbps":  "120",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "11:00:00",
+        "speed_mbps":  "121",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "10:30:00",
+        "speed_mbps":  "188",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "10:00:00",
+        "speed_mbps":  "140",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "09:30:00",
+        "speed_mbps":  "221",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "09:00:00",
+        "speed_mbps":  "217",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "08:30:00",
+        "speed_mbps":  "271",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "08:00:00",
+        "speed_mbps":  "168",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "07:30:00",
+        "speed_mbps":  "212",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "07:00:00",
+        "speed_mbps":  "250",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "06:30:00",
+        "speed_mbps":  "87",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "06:00:00",
+        "speed_mbps":  "68",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "05:30:00",
+        "speed_mbps":  "82",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "05:00:00",
+        "speed_mbps":  "46",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "04:30:01",
+        "speed_mbps":  "31",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "04:00:01",
+        "speed_mbps":  "40",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "03:30:01",
+        "speed_mbps":  "41",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "03:00:01",
+        "speed_mbps":  "37",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "02:30:01",
+        "speed_mbps":  "37",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "02:00:01",
+        "speed_mbps":  "53",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "01:30:01",
+        "speed_mbps":  "43",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "01:00:01",
+        "speed_mbps":  "32",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "00:30:01",
+        "speed_mbps":  "40",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-21",
+        "time":  "00:00:01",
+        "speed_mbps":  "55",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "23:30:01",
+        "speed_mbps":  "138",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "23:00:01",
+        "speed_mbps":  "154",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "22:30:01",
+        "speed_mbps":  "219",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "22:00:01",
+        "speed_mbps":  "95",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "21:30:01",
+        "speed_mbps":  "319",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "21:00:01",
+        "speed_mbps":  "288",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "20:30:01",
+        "speed_mbps":  "202",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "20:00:01",
+        "speed_mbps":  "342",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "19:30:01",
+        "speed_mbps":  "225",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "19:00:01",
+        "speed_mbps":  "211",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "18:30:01",
+        "speed_mbps":  "101",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "18:00:01",
+        "speed_mbps":  "280",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "17:30:01",
+        "speed_mbps":  "89",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "17:00:01",
+        "speed_mbps":  "143",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "16:30:01",
+        "speed_mbps":  "284",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "16:00:01",
+        "speed_mbps":  "227",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "15:30:01",
+        "speed_mbps":  "162",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "15:00:01",
+        "speed_mbps":  "154",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "14:30:01",
+        "speed_mbps":  "141",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "14:00:00",
+        "speed_mbps":  "126",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "13:30:00",
+        "speed_mbps":  "133",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "13:00:00",
+        "speed_mbps":  "204",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "12:30:00",
+        "speed_mbps":  "131",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "12:00:01",
+        "speed_mbps":  "182",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "11:30:00",
+        "speed_mbps":  "99",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "11:00:00",
+        "speed_mbps":  "102",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "10:30:00",
+        "speed_mbps":  "234",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "10:00:00",
+        "speed_mbps":  "86",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "09:30:00",
+        "speed_mbps":  "170",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "09:00:00",
+        "speed_mbps":  "174",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "08:30:00",
+        "speed_mbps":  "100",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "08:00:00",
+        "speed_mbps":  "143",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "07:30:00",
+        "speed_mbps":  "101",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "07:00:00",
+        "speed_mbps":  "94",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "06:30:00",
+        "speed_mbps":  "73",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "06:00:00",
+        "speed_mbps":  "127",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "05:30:00",
+        "speed_mbps":  "86",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "05:00:00",
+        "speed_mbps":  "78",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "04:30:00",
+        "speed_mbps":  "32",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "04:00:00",
+        "speed_mbps":  "92",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "03:30:00",
+        "speed_mbps":  "41",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "03:00:00",
+        "speed_mbps":  "30",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "02:30:00",
+        "speed_mbps":  "29",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "02:00:00",
+        "speed_mbps":  "30",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "01:30:00",
+        "speed_mbps":  "29",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "01:00:00",
+        "speed_mbps":  "51",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "00:30:00",
+        "speed_mbps":  "48",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-20",
+        "time":  "00:00:00",
+        "speed_mbps":  "51",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "23:30:00",
+        "speed_mbps":  "105",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "23:00:00",
+        "speed_mbps":  "78",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "22:30:00",
+        "speed_mbps":  "212",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "22:00:00",
+        "speed_mbps":  "238",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "21:30:00",
+        "speed_mbps":  "435",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "21:00:00",
+        "speed_mbps":  "0",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "20:30:00",
+        "speed_mbps":  "280",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "20:00:00",
+        "speed_mbps":  "307",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "19:30:00",
+        "speed_mbps":  "219",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "19:00:00",
+        "speed_mbps":  "144",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "18:30:00",
+        "speed_mbps":  "206",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "18:00:00",
+        "speed_mbps":  "323",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "17:30:00",
+        "speed_mbps":  "248",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "17:00:00",
+        "speed_mbps":  "166",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "16:30:00",
+        "speed_mbps":  "273",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "16:00:00",
+        "speed_mbps":  "123",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "15:30:00",
+        "speed_mbps":  "127",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "15:00:00",
+        "speed_mbps":  "139",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "14:30:00",
+        "speed_mbps":  "182",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "14:00:00",
+        "speed_mbps":  "110",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "13:30:00",
+        "speed_mbps":  "115",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "13:00:00",
+        "speed_mbps":  "262",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "12:30:00",
+        "speed_mbps":  "163",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "12:00:00",
+        "speed_mbps":  "252",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "11:30:00",
+        "speed_mbps":  "157",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "11:00:00",
+        "speed_mbps":  "317",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "10:30:00",
+        "speed_mbps":  "112",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "10:00:00",
+        "speed_mbps":  "175",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "09:30:00",
+        "speed_mbps":  "81",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "09:00:00",
+        "speed_mbps":  "134",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "08:30:00",
+        "speed_mbps":  "121",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "08:00:00",
+        "speed_mbps":  "128",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "07:30:00",
+        "speed_mbps":  "144",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "07:00:00",
+        "speed_mbps":  "80",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "06:30:00",
+        "speed_mbps":  "109",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "06:00:00",
+        "speed_mbps":  "69",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "05:30:00",
+        "speed_mbps":  "46",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "05:00:00",
+        "speed_mbps":  "67",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "04:30:00",
+        "speed_mbps":  "42",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "04:00:00",
+        "speed_mbps":  "41",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "03:30:00",
+        "speed_mbps":  "32",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "03:00:00",
+        "speed_mbps":  "32",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "02:30:00",
+        "speed_mbps":  "48",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "02:00:00",
+        "speed_mbps":  "30",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "01:30:00",
+        "speed_mbps":  "35",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "01:00:00",
+        "speed_mbps":  "36",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "00:30:00",
+        "speed_mbps":  "40",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-19",
+        "time":  "00:00:00",
+        "speed_mbps":  "78",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "23:30:00",
+        "speed_mbps":  "101",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "23:00:00",
+        "speed_mbps":  "105",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "22:30:00",
+        "speed_mbps":  "309",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "22:00:00",
+        "speed_mbps":  "127",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "21:30:00",
+        "speed_mbps":  "284",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "21:00:00",
+        "speed_mbps":  "411",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "20:30:00",
+        "speed_mbps":  "280",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "20:00:00",
+        "speed_mbps":  "172",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "19:30:00",
+        "speed_mbps":  "219",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "19:00:00",
+        "speed_mbps":  "241",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "18:30:00",
+        "speed_mbps":  "227",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "18:00:00",
+        "speed_mbps":  "202",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "17:30:00",
+        "speed_mbps":  "194",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "17:00:00",
+        "speed_mbps":  "150",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "16:30:00",
+        "speed_mbps":  "102",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "16:00:00",
+        "speed_mbps":  "209",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "15:30:00",
+        "speed_mbps":  "156",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "15:00:00",
+        "speed_mbps":  "118",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "14:30:00",
+        "speed_mbps":  "152",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "14:00:00",
+        "speed_mbps":  "134",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "13:30:00",
+        "speed_mbps":  "184",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "13:00:00",
+        "speed_mbps":  "168",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "12:30:01",
+        "speed_mbps":  "127",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "12:25:01",
+        "speed_mbps":  "162",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "12:20:01",
+        "speed_mbps":  "173",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "12:15:01",
+        "speed_mbps":  "206",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "12:10:01",
+        "speed_mbps":  "131",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "12:05:01",
+        "speed_mbps":  "108",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "12:00:01",
+        "speed_mbps":  "158",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "11:55:01",
+        "speed_mbps":  "138",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "11:50:00",
+        "speed_mbps":  "97",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "11:45:00",
+        "speed_mbps":  "176",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "11:40:00",
+        "speed_mbps":  "158",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "11:35:00",
+        "speed_mbps":  "164",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "11:30:00",
+        "speed_mbps":  "92",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "11:25:00",
+        "speed_mbps":  "110",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "11:20:00",
+        "speed_mbps":  "143",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "11:15:00",
+        "speed_mbps":  "235",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "11:10:00",
+        "speed_mbps":  "183",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "11:05:00",
+        "speed_mbps":  "108",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "11:00:00",
+        "speed_mbps":  "162",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "10:55:00",
+        "speed_mbps":  "115",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "10:50:00",
+        "speed_mbps":  "131",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "10:45:00",
+        "speed_mbps":  "116",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "10:40:00",
+        "speed_mbps":  "162",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "10:35:00",
+        "speed_mbps":  "212",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "10:30:00",
+        "speed_mbps":  "179",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "10:25:00",
+        "speed_mbps":  "80",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "10:20:00",
+        "speed_mbps":  "165",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "10:15:00",
+        "speed_mbps":  "137",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "10:10:00",
+        "speed_mbps":  "222",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "10:05:00",
+        "speed_mbps":  "189",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "10:00:00",
+        "speed_mbps":  "153",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "09:55:00",
+        "speed_mbps":  "126",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "09:50:00",
+        "speed_mbps":  "223",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "09:45:00",
+        "speed_mbps":  "180",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "09:40:00",
+        "speed_mbps":  "114",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "09:35:00",
+        "speed_mbps":  "181",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "09:30:00",
+        "speed_mbps":  "145",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "09:25:00",
+        "speed_mbps":  "171",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "09:20:00",
+        "speed_mbps":  "152",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "09:15:00",
+        "speed_mbps":  "325",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "09:10:00",
+        "speed_mbps":  "157",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "09:05:00",
+        "speed_mbps":  "239",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "09:00:00",
+        "speed_mbps":  "187",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "08:55:00",
+        "speed_mbps":  "156",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "08:50:00",
+        "speed_mbps":  "171",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "08:45:00",
+        "speed_mbps":  "238",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "08:40:00",
+        "speed_mbps":  "151",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "08:35:00",
+        "speed_mbps":  "113",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "08:30:00",
+        "speed_mbps":  "180",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "08:25:00",
+        "speed_mbps":  "151",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "08:20:00",
+        "speed_mbps":  "95",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "08:15:00",
+        "speed_mbps":  "87",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "08:10:00",
+        "speed_mbps":  "30",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "08:05:00",
+        "speed_mbps":  "27",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "08:00:00",
+        "speed_mbps":  "27",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "07:55:00",
+        "speed_mbps":  "27",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "07:50:00",
+        "speed_mbps":  "27",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "07:45:00",
+        "speed_mbps":  "28",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "07:40:00",
+        "speed_mbps":  "28",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "07:35:00",
+        "speed_mbps":  "27",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "07:30:00",
+        "speed_mbps":  "27",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "07:25:00",
+        "speed_mbps":  "27",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "CoreRouter",
+        "date":  "2026-08-18",
+        "time":  "07:20:00",
+        "speed_mbps":  "28",
+        "unit":  "Mbps"
     },
     {
         "device":  "HomeMikro",
-        "timestamp":  "2026-08-03 16:51:37",
-        "speed_mbps":  468,
-        "unit":  "Mbps",
-        "target":  "Manila Cloudflare CDN"
+        "date":  "2026-08-22",
+        "time":  "10:05:00",
+        "speed_mbps":  "168",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "09:35:00",
+        "speed_mbps":  "101",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "09:05:00",
+        "speed_mbps":  "216",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "08:35:00",
+        "speed_mbps":  "158",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "08:05:00",
+        "speed_mbps":  "140",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "07:35:00",
+        "speed_mbps":  "125",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "07:05:00",
+        "speed_mbps":  "146",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "06:35:00",
+        "speed_mbps":  "96",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "06:05:00",
+        "speed_mbps":  "70",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "05:35:00",
+        "speed_mbps":  "81",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "05:05:00",
+        "speed_mbps":  "42",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "04:35:00",
+        "speed_mbps":  "41",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "04:05:00",
+        "speed_mbps":  "193",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "03:35:00",
+        "speed_mbps":  "30",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "03:05:00",
+        "speed_mbps":  "29",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "02:35:00",
+        "speed_mbps":  "41",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "02:05:00",
+        "speed_mbps":  "60",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "01:35:00",
+        "speed_mbps":  "40",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "01:05:00",
+        "speed_mbps":  "44",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "00:35:00",
+        "speed_mbps":  "56",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-22",
+        "time":  "00:05:00",
+        "speed_mbps":  "54",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "23:35:00",
+        "speed_mbps":  "71",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "23:05:00",
+        "speed_mbps":  "126",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "22:35:00",
+        "speed_mbps":  "203",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "22:05:00",
+        "speed_mbps":  "114",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "21:35:00",
+        "speed_mbps":  "162",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "21:05:00",
+        "speed_mbps":  "154",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "20:35:00",
+        "speed_mbps":  "459",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "20:05:00",
+        "speed_mbps":  "346",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "19:35:00",
+        "speed_mbps":  "303",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "19:05:00",
+        "speed_mbps":  "155",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "18:35:00",
+        "speed_mbps":  "301",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "18:05:00",
+        "speed_mbps":  "164",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "17:35:00",
+        "speed_mbps":  "191",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "17:05:00",
+        "speed_mbps":  "172",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "16:35:00",
+        "speed_mbps":  "138",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "16:05:00",
+        "speed_mbps":  "207",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "15:35:00",
+        "speed_mbps":  "210",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "15:05:00",
+        "speed_mbps":  "238",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "14:35:00",
+        "speed_mbps":  "197",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "14:05:00",
+        "speed_mbps":  "207",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "13:35:00",
+        "speed_mbps":  "260",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "13:05:00",
+        "speed_mbps":  "130",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "12:35:00",
+        "speed_mbps":  "117",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "12:05:00",
+        "speed_mbps":  "98",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "11:35:00",
+        "speed_mbps":  "142",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "11:05:00",
+        "speed_mbps":  "127",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "10:35:00",
+        "speed_mbps":  "104",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "10:05:00",
+        "speed_mbps":  "165",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "09:35:00",
+        "speed_mbps":  "165",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "09:05:00",
+        "speed_mbps":  "243",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "08:35:00",
+        "speed_mbps":  "394",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "08:05:00",
+        "speed_mbps":  "187",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "07:35:00",
+        "speed_mbps":  "241",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "07:05:00",
+        "speed_mbps":  "185",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "06:35:00",
+        "speed_mbps":  "142",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "06:05:00",
+        "speed_mbps":  "84",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "05:35:00",
+        "speed_mbps":  "32",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "05:05:00",
+        "speed_mbps":  "61",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "04:35:00",
+        "speed_mbps":  "43",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "04:05:00",
+        "speed_mbps":  "33",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "03:35:00",
+        "speed_mbps":  "64",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "03:05:00",
+        "speed_mbps":  "36",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "02:35:00",
+        "speed_mbps":  "46",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "02:05:00",
+        "speed_mbps":  "32",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "01:35:00",
+        "speed_mbps":  "41",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "01:05:00",
+        "speed_mbps":  "110",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "00:35:00",
+        "speed_mbps":  "48",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-21",
+        "time":  "00:05:00",
+        "speed_mbps":  "55",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "23:35:00",
+        "speed_mbps":  "116",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "23:05:00",
+        "speed_mbps":  "77",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "22:35:00",
+        "speed_mbps":  "115",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "22:05:00",
+        "speed_mbps":  "228",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "21:35:00",
+        "speed_mbps":  "342",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "21:05:00",
+        "speed_mbps":  "318",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "20:35:00",
+        "speed_mbps":  "330",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "20:05:00",
+        "speed_mbps":  "292",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "19:35:00",
+        "speed_mbps":  "207",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "19:05:00",
+        "speed_mbps":  "155",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "18:35:00",
+        "speed_mbps":  "203",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "18:05:00",
+        "speed_mbps":  "209",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "17:35:00",
+        "speed_mbps":  "175",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "17:05:00",
+        "speed_mbps":  "247",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "16:35:00",
+        "speed_mbps":  "216",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "16:05:00",
+        "speed_mbps":  "116",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "15:35:00",
+        "speed_mbps":  "100",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "15:05:00",
+        "speed_mbps":  "188",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "14:35:00",
+        "speed_mbps":  "128",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "14:05:00",
+        "speed_mbps":  "205",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "13:35:00",
+        "speed_mbps":  "120",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "13:05:00",
+        "speed_mbps":  "107",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "12:35:00",
+        "speed_mbps":  "160",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "12:05:00",
+        "speed_mbps":  "213",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "11:35:00",
+        "speed_mbps":  "197",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "11:05:00",
+        "speed_mbps":  "112",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "10:35:00",
+        "speed_mbps":  "167",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "10:05:00",
+        "speed_mbps":  "143",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "09:35:00",
+        "speed_mbps":  "131",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "09:05:00",
+        "speed_mbps":  "149",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "08:35:00",
+        "speed_mbps":  "120",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "08:05:00",
+        "speed_mbps":  "117",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "07:35:00",
+        "speed_mbps":  "132",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "07:05:00",
+        "speed_mbps":  "152",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "06:35:00",
+        "speed_mbps":  "166",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "06:05:00",
+        "speed_mbps":  "148",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "05:35:00",
+        "speed_mbps":  "129",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "05:05:00",
+        "speed_mbps":  "130",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "04:35:00",
+        "speed_mbps":  "44",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "04:05:00",
+        "speed_mbps":  "30",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "03:35:00",
+        "speed_mbps":  "30",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "03:05:00",
+        "speed_mbps":  "41",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "02:35:00",
+        "speed_mbps":  "56",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "02:05:00",
+        "speed_mbps":  "91",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "01:35:00",
+        "speed_mbps":  "29",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "01:05:00",
+        "speed_mbps":  "40",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "00:35:00",
+        "speed_mbps":  "35",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-20",
+        "time":  "00:05:00",
+        "speed_mbps":  "88",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "23:35:00",
+        "speed_mbps":  "139",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "23:05:00",
+        "speed_mbps":  "91",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "22:35:00",
+        "speed_mbps":  "130",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "22:05:00",
+        "speed_mbps":  "157",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "21:35:00",
+        "speed_mbps":  "179",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "21:05:00",
+        "speed_mbps":  "396",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "20:35:00",
+        "speed_mbps":  "546",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "20:05:00",
+        "speed_mbps":  "347",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "19:35:00",
+        "speed_mbps":  "155",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "19:05:00",
+        "speed_mbps":  "192",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "18:35:00",
+        "speed_mbps":  "285",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "18:05:00",
+        "speed_mbps":  "357",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "17:35:00",
+        "speed_mbps":  "240",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "17:05:00",
+        "speed_mbps":  "281",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "16:35:00",
+        "speed_mbps":  "144",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "16:05:00",
+        "speed_mbps":  "171",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "15:35:00",
+        "speed_mbps":  "95",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "15:05:00",
+        "speed_mbps":  "143",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "14:35:00",
+        "speed_mbps":  "119",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "14:05:00",
+        "speed_mbps":  "150",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "13:35:00",
+        "speed_mbps":  "143",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "13:05:00",
+        "speed_mbps":  "178",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "12:35:00",
+        "speed_mbps":  "252",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "12:05:00",
+        "speed_mbps":  "141",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "11:35:00",
+        "speed_mbps":  "115",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "11:05:00",
+        "speed_mbps":  "275",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "10:35:00",
+        "speed_mbps":  "149",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "10:05:00",
+        "speed_mbps":  "193",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "09:35:00",
+        "speed_mbps":  "151",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "09:05:00",
+        "speed_mbps":  "104",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "08:35:00",
+        "speed_mbps":  "161",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "08:05:00",
+        "speed_mbps":  "58",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "07:35:00",
+        "speed_mbps":  "106",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "07:05:00",
+        "speed_mbps":  "179",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "06:35:00",
+        "speed_mbps":  "72",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "06:05:00",
+        "speed_mbps":  "90",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "05:35:00",
+        "speed_mbps":  "61",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "05:05:00",
+        "speed_mbps":  "63",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "04:35:00",
+        "speed_mbps":  "53",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "04:05:00",
+        "speed_mbps":  "64",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "03:35:00",
+        "speed_mbps":  "49",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "03:05:00",
+        "speed_mbps":  "33",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "02:35:00",
+        "speed_mbps":  "93",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "02:05:00",
+        "speed_mbps":  "40",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "01:35:00",
+        "speed_mbps":  "49",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "01:05:00",
+        "speed_mbps":  "33",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "00:35:00",
+        "speed_mbps":  "45",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-19",
+        "time":  "00:05:00",
+        "speed_mbps":  "39",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "23:35:00",
+        "speed_mbps":  "114",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "23:05:00",
+        "speed_mbps":  "165",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "22:35:00",
+        "speed_mbps":  "315",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "22:05:00",
+        "speed_mbps":  "86",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "21:35:00",
+        "speed_mbps":  "306",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "21:05:00",
+        "speed_mbps":  "167",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "20:35:00",
+        "speed_mbps":  "250",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "20:05:00",
+        "speed_mbps":  "317",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "19:35:00",
+        "speed_mbps":  "228",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "19:05:00",
+        "speed_mbps":  "275",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "18:35:00",
+        "speed_mbps":  "228",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "18:05:00",
+        "speed_mbps":  "204",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "17:35:00",
+        "speed_mbps":  "264",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "17:05:00",
+        "speed_mbps":  "316",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "16:35:00",
+        "speed_mbps":  "175",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "16:05:00",
+        "speed_mbps":  "220",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "15:35:00",
+        "speed_mbps":  "164",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "15:05:00",
+        "speed_mbps":  "215",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "14:35:00",
+        "speed_mbps":  "107",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "14:05:00",
+        "speed_mbps":  "159",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "13:35:00",
+        "speed_mbps":  "249",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "13:05:00",
+        "speed_mbps":  "179",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "12:35:00",
+        "speed_mbps":  "145",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "12:27:30",
+        "speed_mbps":  "122",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "12:22:30",
+        "speed_mbps":  "166",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "12:17:30",
+        "speed_mbps":  "171",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "12:12:30",
+        "speed_mbps":  "285",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "12:07:30",
+        "speed_mbps":  "134",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "12:02:30",
+        "speed_mbps":  "196",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "11:57:30",
+        "speed_mbps":  "129",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "11:52:30",
+        "speed_mbps":  "78",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "11:47:30",
+        "speed_mbps":  "109",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "11:42:30",
+        "speed_mbps":  "182",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "11:37:30",
+        "speed_mbps":  "123",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "11:32:30",
+        "speed_mbps":  "152",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "11:27:30",
+        "speed_mbps":  "145",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "11:22:30",
+        "speed_mbps":  "175",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "11:17:30",
+        "speed_mbps":  "121",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "11:12:30",
+        "speed_mbps":  "126",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "11:07:30",
+        "speed_mbps":  "92",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "11:02:30",
+        "speed_mbps":  "104",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "10:57:30",
+        "speed_mbps":  "120",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "10:52:30",
+        "speed_mbps":  "183",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "10:47:30",
+        "speed_mbps":  "125",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "10:42:30",
+        "speed_mbps":  "129",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "10:37:30",
+        "speed_mbps":  "161",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "10:32:30",
+        "speed_mbps":  "188",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "10:27:30",
+        "speed_mbps":  "145",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "10:22:30",
+        "speed_mbps":  "133",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "10:17:30",
+        "speed_mbps":  "74",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "10:12:30",
+        "speed_mbps":  "163",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "10:07:30",
+        "speed_mbps":  "196",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "10:02:30",
+        "speed_mbps":  "177",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "09:57:30",
+        "speed_mbps":  "197",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "09:52:30",
+        "speed_mbps":  "161",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "09:47:30",
+        "speed_mbps":  "177",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "09:42:30",
+        "speed_mbps":  "196",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "09:37:30",
+        "speed_mbps":  "132",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "09:32:30",
+        "speed_mbps":  "283",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "09:27:30",
+        "speed_mbps":  "271",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "09:22:30",
+        "speed_mbps":  "211",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "09:17:30",
+        "speed_mbps":  "155",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "09:12:30",
+        "speed_mbps":  "173",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "09:07:30",
+        "speed_mbps":  "249",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "09:02:30",
+        "speed_mbps":  "170",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "08:57:30",
+        "speed_mbps":  "116",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "08:52:30",
+        "speed_mbps":  "152",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "08:47:30",
+        "speed_mbps":  "184",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "08:42:30",
+        "speed_mbps":  "196",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "08:37:30",
+        "speed_mbps":  "161",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "08:32:30",
+        "speed_mbps":  "172",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "08:27:30",
+        "speed_mbps":  "189",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "08:22:30",
+        "speed_mbps":  "112",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "08:17:30",
+        "speed_mbps":  "97",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "08:12:30",
+        "speed_mbps":  "88",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "08:07:30",
+        "speed_mbps":  "27",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "08:02:30",
+        "speed_mbps":  "28",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "02:42:30",
+        "speed_mbps":  "34",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "02:37:30",
+        "speed_mbps":  "32",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "02:22:30",
+        "speed_mbps":  "29",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "02:17:30",
+        "speed_mbps":  "29",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "02:12:30",
+        "speed_mbps":  "29",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "02:02:30",
+        "speed_mbps":  "59",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "01:57:30",
+        "speed_mbps":  "38",
+        "unit":  "Mbps"
+    },
+    {
+        "device":  "HomeMikro",
+        "date":  "2026-08-18",
+        "time":  "01:47:30",
+        "speed_mbps":  "32",
+        "unit":  "Mbps"
     }
 ]
