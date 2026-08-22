@@ -241,14 +241,14 @@ function insertLogEntry(entry) {
   }
 }
 
-// 2. High-Speed Parallel Background Fetch for Historical Logs
+// 2. High-Speed Background Fetch for Historical Logs (Rate-Limit Immune)
 async function loadHistoricalDataAsync() {
-  const repoOwner = 'flemin';
-  const repoName = 'Fleming-Wifi-Speedtest';
-  const devices = ['CoreRouter', 'HomeMikro'];
-
-  const cacheKey = 'fleming_speedtest_logs_v2';
+  const cacheKey = 'fleming_speedtest_logs_v3';
+  const cacheTimestampKey = 'fleming_speedtest_logs_ts';
   const cached = sessionStorage.getItem(cacheKey);
+  const now = Date.now();
+
+  // Load from session cache immediately if available
   if (cached) {
     try {
       const parsed = JSON.parse(cached);
@@ -258,42 +258,64 @@ async function loadHistoricalDataAsync() {
     } catch {}
   }
 
-  const fetchPromises = devices.map(async (dev) => {
-    try {
-      const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/Device%20Speedtest%20Logs/${dev}`;
-      const res = await fetch(url);
-      if (!res.ok) return [];
-
-      const files = await res.json();
-      if (!Array.isArray(files)) return [];
-
-      const jsonFiles = files.filter(f => f.name.endsWith('.json') && !f.name.includes('test')).slice(-30);
-
-      const fileContents = await Promise.all(
-        jsonFiles.map(async (file) => {
-          try {
-            const contentRes = await fetch(file.download_url);
-            if (contentRes.ok) return await contentRes.json();
-          } catch {}
-          return null;
-        })
-      );
-
-      return fileContents.filter(Boolean);
-    } catch (e) {
-      console.error(`Error fetching logs for ${dev}:`, e);
-      return [];
+  // 1. Fetch compiled logs_index.json (Fast CDN, 0 GitHub API rate limits, returns all recent tests)
+  try {
+    const cb = Date.now();
+    let res = await fetch(`Device Speedtest Logs/logs_index.json?t=${cb}`);
+    if (!res.ok) {
+      res = await fetch(`https://raw.githubusercontent.com/flemin/Fleming-Wifi-Speedtest/main/Device%20Speedtest%20Logs/logs_index.json?t=${cb}`);
     }
-  });
+    if (res.ok) {
+      const logs = await res.json();
+      if (Array.isArray(logs)) {
+        logs.forEach(insertLogEntry);
+      }
+    }
+  } catch (err) {
+    console.warn("Could not load logs_index.json:", err);
+  }
 
-  const results = await Promise.all(fetchPromises);
-  const allFetched = results.flat();
-  allFetched.forEach(insertLogEntry);
+  // 2. Fetch recent new log files via Git Tree API fallback (1 call returns all paths)
+  try {
+    const treeRes = await fetch('https://api.github.com/repos/flemin/Fleming-Wifi-Speedtest/git/trees/main?recursive=1');
+    if (treeRes.ok) {
+      const treeData = await treeRes.json();
+      if (treeData && Array.isArray(treeData.tree)) {
+        const coreFiles = treeData.tree
+          .filter(f => f.path && f.path.startsWith('Device Speedtest Logs/CoreRouter/log_') && f.path.endsWith('.json'))
+          .sort((a, b) => b.path.localeCompare(a.path))
+          .slice(0, 30);
+          
+        const homeFiles = treeData.tree
+          .filter(f => f.path && f.path.startsWith('Device Speedtest Logs/HomeMikro/log_') && f.path.endsWith('.json'))
+          .sort((a, b) => b.path.localeCompare(a.path))
+          .slice(0, 30);
 
+        const recentFiles = [...coreFiles, ...homeFiles];
+        await Promise.all(
+          recentFiles.map(async (file) => {
+            try {
+              const fileRes = await fetch(`https://raw.githubusercontent.com/flemin/Fleming-Wifi-Speedtest/main/${file.path}`);
+              if (fileRes.ok) {
+                const logItem = await fileRes.json();
+                insertLogEntry(logItem);
+              }
+            } catch {}
+          })
+        );
+      }
+    }
+  } catch (err) {
+    console.warn("Git tree fallback note:", err);
+  }
+
+  // Cache updated dataset in sessionStorage
   try {
     sessionStorage.setItem(cacheKey, JSON.stringify([...coreRouterLogs, ...homeMikroLogs]));
+    sessionStorage.setItem(cacheTimestampKey, now.toString());
   } catch {}
 }
+
 
 function formatRelativeTime(dateObj) {
   const now = new Date();
