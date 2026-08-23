@@ -745,27 +745,29 @@
 
       list.forEach(c => {
         const tr = document.createElement('tr');
+        const loc = c.location || 'Unknown';
+        const authType = c.authType || '';
         
         let locBadgeClass = 'loc-badge';
-        if (c.location.includes('Resort')) locBadgeClass += ' resort';
-        else if (c.location === 'Home') locBadgeClass += ' home';
+        if (loc.includes('Resort')) locBadgeClass += ' resort';
+        else if (loc === 'Home') locBadgeClass += ' home';
 
         let authBadge = '';
-        if (c.authType.includes('Private')) {
+        if (authType.includes('Private')) {
           authBadge = `<span class="ticket-badge private">🔑 Private / LAN</span>`;
         } else if (c.voucherCode) {
-          authBadge = `<span class="ticket-badge">🎟️ Code: ${c.voucherCode}</span>`;
+          authBadge = `<span class="ticket-badge">🎟️ ${c.voucherCode}</span>`;
         } else {
-          authBadge = `<span class="ticket-badge" style="background: rgba(255,255,255,0.05); color: #cbd5e1;">${c.authType}</span>`;
+          authBadge = `<span class="ticket-badge" style="background: rgba(255,255,255,0.05); color: #cbd5e1;">${authType || 'Hotspot'}</span>`;
         }
 
         tr.innerHTML = `
           <td>
-            <div style="font-weight: 700; color: #fff; font-size: 0.88rem;">${c.name}</div>
+            <div style="font-weight: 700; color: #fff; font-size: 0.88rem;">${c.name || c.mac}</div>
             <div style="font-size: 0.72rem; color: var(--muted); font-family: 'JetBrains Mono', monospace;">${c.mac}</div>
           </td>
           <td>
-            <span class="${locBadgeClass}">${c.location}</span>
+            <span class="${locBadgeClass}">${loc}</span>
           </td>
           <td>
             <div style="font-weight: 600; color: #e2e8f0; font-size: 0.82rem;">${c.apName}</div>
