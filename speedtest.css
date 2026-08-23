@@ -555,52 +555,82 @@ body {
 
 /* Range Selection Styling */
 .cal-day-cell.in-range {
-  background: rgba(56, 189, 248, 0.18);
-  color: #e0f2fe;
-  border-radius: 0;
-  border-color: transparent;
+  background: rgba(56, 189, 248, 0.25) !important;
+  color: #ffffff !important;
+  border-radius: 0 !important;
+  border-top: 1px solid rgba(56, 189, 248, 0.4) !important;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.4) !important;
 }
 
 .cal-day-cell.in-range-preview {
-  background: rgba(56, 189, 248, 0.1);
-  color: #bae6fd;
-  border-top: 1px dashed rgba(56, 189, 248, 0.45);
-  border-bottom: 1px dashed rgba(56, 189, 248, 0.45);
-  border-radius: 0;
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #fef08a !important;
+  border-top: 1px dashed rgba(245, 158, 11, 0.6) !important;
+  border-bottom: 1px dashed rgba(245, 158, 11, 0.6) !important;
+  border-radius: 0 !important;
 }
 
 .cal-day-cell.range-start {
-  background: linear-gradient(135deg, #0284c7, #2563eb);
-  color: #ffffff;
-  font-weight: 700;
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
-  z-index: 2;
+  background: linear-gradient(135deg, #0284c7, #2563eb) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-top-left-radius: 8px !important;
+  border-bottom-left-radius: 8px !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.55) !important;
+  z-index: 3;
 }
 
 .cal-day-cell.range-end {
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
-  color: #ffffff;
-  font-weight: 700;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  box-shadow: 0 0 12px rgba(79, 70, 229, 0.45);
-  z-index: 2;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-top-right-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  box-shadow: 0 0 14px rgba(124, 58, 237, 0.55) !important;
+  z-index: 3;
 }
 
 .cal-day-cell.range-single,
 .cal-day-cell.range-start.range-end {
-  background: linear-gradient(135deg, #0284c7, #4f46e5);
-  color: #ffffff;
-  font-weight: 700;
-  border-radius: 8px;
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
-  z-index: 2;
+  background: linear-gradient(135deg, #0284c7, #4f46e5) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.5) !important;
+  z-index: 3;
+}
+
+.cal-day-cell.selecting-start {
+  outline: 2px dashed #f59e0b;
+  outline-offset: 1px;
+  animation: pulse-ring 1.2s infinite;
+}
+
+@keyframes pulse-ring {
+  0%, 100% { outline-color: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+  50% { outline-color: #fbbf24; box-shadow: 0 0 18px rgba(245, 158, 11, 0.8); }
+}
+
+.cal-day-cell.has-data::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 4px #34d399;
+}
+
+.cal-day-cell.range-start.has-data::after,
+.cal-day-cell.range-end.has-data::after,
+.cal-day-cell.range-single.has-data::after {
+  background: #ffffff;
+  box-shadow: 0 0 4px #ffffff;
 }
 
 .cal-day-cell.today:not(.range-start):not(.range-end):not(.in-range):not(.range-single) {
@@ -626,15 +656,21 @@ body {
 }
 
 .selected-day-badge.selecting {
-  background: rgba(245, 158, 11, 0.12);
-  border-color: rgba(245, 158, 11, 0.4);
-  color: #fbbf24;
-  animation: pulse-border 1.5s infinite;
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.6);
+  color: #fef08a;
+  animation: pulse-border 1.2s infinite;
+}
+
+.selected-day-badge.locked {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.5);
+  color: #6ee7b7;
 }
 
 @keyframes pulse-border {
   0%, 100% { border-color: rgba(245, 158, 11, 0.4); }
-  50% { border-color: rgba(245, 158, 11, 0.8); }
+  50% { border-color: rgba(245, 158, 11, 0.9); }
 }
 
 /* Chart Card */
