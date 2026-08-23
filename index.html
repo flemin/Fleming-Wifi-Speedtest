@@ -21,7 +21,7 @@
   <meta http-equiv="Expires" content="0">
   
   <!-- CSS Stylesheets -->
-  <link rel="stylesheet" href="speedtest.css">
+  <link rel="stylesheet" href="speedtest.css?v=20260823_range_cal">
   
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -165,9 +165,10 @@
         
         <div class="quick-days">
           <button class="btn-pill" id="btnPrevDay">◄ Prev</button>
-          <button class="btn-pill active" id="btnToday">Today</button>
+          <button class="btn-pill" id="btnToday">Today</button>
           <button class="btn-pill" id="btnYesterday">Yesterday</button>
           <button class="btn-pill" id="btnNextDay">Next ►</button>
+          <button class="btn-pill" id="btnResetRange" title="Reset to default 7-day range">🔄 Reset</button>
         </div>
         
         <div class="calendar-grid" id="calGrid">
@@ -175,7 +176,7 @@
         </div>
         
         <div class="selected-day-badge" id="selectedDayText">
-          Loading selected date...
+          Loading selected date range...
         </div>
       </div>
 
@@ -193,6 +194,7 @@
             <button class="range-btn active" data-range="7d">7d (30m)</button>
             <button class="range-btn" data-range="14d">14d (1h)</button>
             <button class="range-btn" data-range="30d">30d (4h)</button>
+            <button class="range-btn" id="btnResetChart" title="Reset to default 7-day range">🔄 Reset</button>
           </div>
         </div>
         
@@ -207,7 +209,7 @@
     <section class="metrics-section">
       <div class="glass-card">
         <div class="card-title" style="margin-bottom: 0.85rem;">
-          <span>📊</span> 7-Day Executive Summary &amp; SLA Performance Analysis
+          <span>📊</span> <span id="metricsSectionTitle">7-Day Executive Summary &amp; SLA Performance Analysis</span>
         </div>
         
         <div class="metrics-grid">
@@ -216,7 +218,7 @@
           <div class="metric-card">
             <div class="metric-icon-box icon-avg">⚡</div>
             <div class="metric-info">
-              <span class="metric-label">7-Day Average Speed</span>
+              <span class="metric-label" id="metricAvgSpeedLabel">7-Day Average Speed</span>
               <span class="metric-value" id="metricAvgSpeed">--- Mbps</span>
               <span class="metric-sub">Across all recorded tests</span>
             </div>
@@ -348,6 +350,6 @@
   </div>
 
   <!-- Dashboard JavaScript -->
-  <script src="speedtest.js?v=20260818_mobile_fixed"></script>
+  <script src="speedtest.js?v=20260823_range_cal"></script>
 </body>
 </html>
