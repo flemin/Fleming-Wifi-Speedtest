@@ -2,6 +2,11 @@
 
 const MANILA_TZ = 'Asia/Manila';
 
+// Helper: Normalized Date object representing UTC midnight for a specific Manila date
+function makeManilaDate(year, month, day) {
+  return new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+}
+
 // Helper: Get Manila date components for any date
 function getManilaParts(d) {
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -29,14 +34,23 @@ function getManilaParts(d) {
 
 // Current Manila Date initialization
 let currentManilaNow = getManilaParts(new Date());
-let selectedDate = new Date(Date.UTC(currentManilaNow.year, currentManilaNow.month, currentManilaNow.day, 12, 0, 0));
-let calendarCurrentMonth = new Date(Date.UTC(currentManilaNow.year, currentManilaNow.month, 1, 12, 0, 0));
+let todayManilaDate = makeManilaDate(currentManilaNow.year, currentManilaNow.month, currentManilaNow.day);
+
+// Selection state: Default to 7-day preset ending today
+let currentSelectionMode = 'preset'; // 'preset' or 'custom'
+let activePreset = '7d'; // '24h', '7d', '14d', '30d'
+let rangeEndDate = new Date(todayManilaDate.getTime());
+let rangeStartDate = new Date(todayManilaDate.getTime() - (6 * 24 * 60 * 60 * 1000));
+let calendarCurrentMonth = makeManilaDate(currentManilaNow.year, currentManilaNow.month, 1);
+
+// Interactive 2-click date range selection & hover states
+let selectingStartDate = null; // Date or null
+let hoveredDate = null; // Date or null
 
 let coreRouterLogs = [];
 let homeMikroLogs = [];
 let chartInstance = null;
 let initialDateLoaded = false;
-let currentChartRange = '7d'; // '24h', '7d', '14d', '30d'
 
 // Initialize Dashboard
 document.addEventListener('DOMContentLoaded', async () => {
@@ -106,31 +120,139 @@ function setupEventListeners() {
   
   document.getElementById('btnToday').addEventListener('click', () => {
     const nowParts = getManilaParts(new Date());
-    selectedDate = new Date(Date.UTC(nowParts.year, nowParts.month, nowParts.day, 12, 0, 0));
-    calendarCurrentMonth = new Date(Date.UTC(nowParts.year, nowParts.month, 1, 12, 0, 0));
+    todayManilaDate = makeManilaDate(nowParts.year, nowParts.month, nowParts.day);
+    rangeStartDate = new Date(todayManilaDate.getTime());
+    rangeEndDate = new Date(todayManilaDate.getTime());
+    calendarCurrentMonth = makeManilaDate(nowParts.year, nowParts.month, 1);
+    currentSelectionMode = 'custom';
+    selectingStartDate = null;
+    hoveredDate = null;
+    
+    document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.quick-days .btn-pill').forEach(b => b.classList.remove('active'));
+    document.getElementById('btnToday').classList.add('active');
+    
     renderCalendar();
     updateDashboard();
   });
   
   document.getElementById('btnYesterday').addEventListener('click', () => {
-    selectedDate.setUTCDate(selectedDate.getUTCDate() - 1);
-    calendarCurrentMonth = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), 1, 12, 0, 0));
+    const nowParts = getManilaParts(new Date());
+    const yest = new Date(makeManilaDate(nowParts.year, nowParts.month, nowParts.day).getTime() - (24 * 60 * 60 * 1000));
+    rangeStartDate = new Date(yest.getTime());
+    rangeEndDate = new Date(yest.getTime());
+    calendarCurrentMonth = makeManilaDate(yest.getUTCFullYear(), yest.getUTCMonth(), 1);
+    currentSelectionMode = 'custom';
+    selectingStartDate = null;
+    hoveredDate = null;
+    
+    document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.quick-days .btn-pill').forEach(b => b.classList.remove('active'));
+    document.getElementById('btnYesterday').classList.add('active');
+    
     renderCalendar();
     updateDashboard();
   });
   
   document.getElementById('btnPrevDay').addEventListener('click', () => {
-    selectedDate.setUTCDate(selectedDate.getUTCDate() - 1);
-    calendarCurrentMonth = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), 1, 12, 0, 0));
+    const daySpan = Math.max(1, Math.round((rangeEndDate.getTime() - rangeStartDate.getTime()) / (86400 * 1000)) + 1);
+    const shiftMs = daySpan * 24 * 60 * 60 * 1000;
+    rangeStartDate = new Date(rangeStartDate.getTime() - shiftMs);
+    rangeEndDate = new Date(rangeEndDate.getTime() - shiftMs);
+    calendarCurrentMonth = makeManilaDate(rangeStartDate.getUTCFullYear(), rangeStartDate.getUTCMonth(), 1);
+    currentSelectionMode = 'custom';
+    selectingStartDate = null;
+    hoveredDate = null;
+    
+    document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.quick-days .btn-pill').forEach(b => b.classList.remove('active'));
+    
     renderCalendar();
     updateDashboard();
   });
   
   document.getElementById('btnNextDay').addEventListener('click', () => {
-    selectedDate.setUTCDate(selectedDate.getUTCDate() + 1);
-    calendarCurrentMonth = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), 1, 12, 0, 0));
+    const daySpan = Math.max(1, Math.round((rangeEndDate.getTime() - rangeStartDate.getTime()) / (86400 * 1000)) + 1);
+    const shiftMs = daySpan * 24 * 60 * 60 * 1000;
+    rangeStartDate = new Date(rangeStartDate.getTime() + shiftMs);
+    rangeEndDate = new Date(rangeEndDate.getTime() + shiftMs);
+    calendarCurrentMonth = makeManilaDate(rangeEndDate.getUTCFullYear(), rangeEndDate.getUTCMonth(), 1);
+    currentSelectionMode = 'custom';
+    selectingStartDate = null;
+    hoveredDate = null;
+    
+    document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.quick-days .btn-pill').forEach(b => b.classList.remove('active'));
+    
     renderCalendar();
     updateDashboard();
+  });
+
+  const btnResetRange = document.getElementById('btnResetRange');
+  if (btnResetRange) {
+    btnResetRange.addEventListener('click', resetToDefaultRange);
+  }
+
+  const btnResetChart = document.getElementById('btnResetChart');
+  if (btnResetChart) {
+    btnResetChart.addEventListener('click', resetToDefaultRange);
+  }
+}
+
+// Preset range selection logic (24h, 7d, 14d, 30d)
+function applyPreset(rangeKey) {
+  currentSelectionMode = 'preset';
+  activePreset = rangeKey;
+  selectingStartDate = null;
+  hoveredDate = null;
+  
+  const nowParts = getManilaParts(new Date());
+  todayManilaDate = makeManilaDate(nowParts.year, nowParts.month, nowParts.day);
+  rangeEndDate = new Date(todayManilaDate.getTime());
+
+  if (rangeKey === '24h') {
+    rangeStartDate = new Date(todayManilaDate.getTime());
+  } else if (rangeKey === '7d') {
+    rangeStartDate = new Date(todayManilaDate.getTime() - (6 * 24 * 60 * 60 * 1000));
+  } else if (rangeKey === '14d') {
+    rangeStartDate = new Date(todayManilaDate.getTime() - (13 * 24 * 60 * 60 * 1000));
+  } else if (rangeKey === '30d') {
+    rangeStartDate = new Date(todayManilaDate.getTime() - (29 * 24 * 60 * 60 * 1000));
+  }
+  
+  // Set calendar view to match end date's month
+  calendarCurrentMonth = makeManilaDate(rangeEndDate.getUTCFullYear(), rangeEndDate.getUTCMonth(), 1);
+
+  // Update button active state
+  updatePresetButtonsUI();
+  
+  renderCalendar();
+  updateDashboard();
+}
+
+function updatePresetButtonsUI() {
+  document.querySelectorAll('.range-btn[data-range]').forEach(b => {
+    if (currentSelectionMode === 'preset' && b.getAttribute('data-range') === activePreset) {
+      b.classList.add('active');
+    } else {
+      b.classList.remove('active');
+    }
+  });
+
+  document.querySelectorAll('.quick-days .btn-pill').forEach(b => b.classList.remove('active'));
+}
+
+function resetToDefaultRange() {
+  applyPreset('7d');
+}
+
+function setupRangeSelectorListeners() {
+  const buttons = document.querySelectorAll('.range-btn[data-range]');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const range = btn.getAttribute('data-range') || '7d';
+      applyPreset(range);
+    });
   });
 }
 
@@ -176,8 +298,10 @@ function autoSelectLatestActiveDate() {
     const sorted = [...allLogs].sort((a, b) => b.dateObj - a.dateObj);
     if (sorted[0]) {
       const topManila = sorted[0].manila;
-      selectedDate = new Date(Date.UTC(topManila.year, topManila.month, topManila.day, 12, 0, 0));
-      calendarCurrentMonth = new Date(Date.UTC(topManila.year, topManila.month, 1, 12, 0, 0));
+      todayManilaDate = makeManilaDate(topManila.year, topManila.month, topManila.day);
+      rangeEndDate = new Date(todayManilaDate.getTime());
+      rangeStartDate = new Date(todayManilaDate.getTime() - (6 * 24 * 60 * 60 * 1000));
+      calendarCurrentMonth = makeManilaDate(topManila.year, topManila.month, 1);
     }
   }
 }
@@ -316,7 +440,6 @@ async function loadHistoricalDataAsync() {
   } catch {}
 }
 
-
 function formatRelativeTime(dateObj) {
   const now = new Date();
   const diffMs = now - dateObj;
@@ -370,7 +493,69 @@ function getSpeedColorStyle(speed) {
   }
 }
 
-// Graphical Calendar Renderer (Strict Manila Timezone)
+// Calendar Date Click Handler (2-Click Range Selection)
+function handleCalendarDateClick(clickedDate) {
+  if (selectingStartDate === null) {
+    // 1st click: Start range selection
+    selectingStartDate = clickedDate;
+    rangeStartDate = clickedDate;
+    rangeEndDate = clickedDate;
+    currentSelectionMode = 'custom';
+    hoveredDate = null;
+
+    // Remove active state from preset buttons (custom range overrides presets)
+    document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.quick-days .btn-pill').forEach(b => b.classList.remove('active'));
+
+    renderCalendar();
+    updateSelectedRangeText();
+  } else {
+    // 2nd click: Complete range selection
+    if (clickedDate.getTime() < selectingStartDate.getTime()) {
+      rangeStartDate = clickedDate;
+      rangeEndDate = selectingStartDate;
+    } else {
+      rangeStartDate = selectingStartDate;
+      rangeEndDate = clickedDate;
+    }
+    selectingStartDate = null;
+    hoveredDate = null;
+    currentSelectionMode = 'custom';
+
+    document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.quick-days .btn-pill').forEach(b => b.classList.remove('active'));
+
+    renderCalendar();
+    updateDashboard();
+  }
+}
+
+// Update Selected Range Badge Text
+function updateSelectedRangeText() {
+  const badge = document.getElementById('selectedDayText');
+  if (!badge) return;
+
+  if (selectingStartDate !== null) {
+    badge.classList.add('selecting');
+    const startStr = selectingStartDate.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
+    badge.innerHTML = `<span>⏳</span> <span>Selecting Range: Click 2nd date for end (Start: <strong>${startStr}</strong>)</span>`;
+    return;
+  }
+
+  badge.classList.remove('selecting');
+  const startStr = rangeStartDate.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
+  const endStr = rangeEndDate.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
+  const dayCount = Math.max(1, Math.round((rangeEndDate.getTime() - rangeStartDate.getTime()) / (86400 * 1000)) + 1);
+
+  if (rangeStartDate.getTime() === rangeEndDate.getTime()) {
+    badge.innerHTML = `<span>📅</span> <span>Selected Date (PHT): <strong>${startStr}</strong> (1 Day)</span>`;
+  } else {
+    const modeLabel = currentSelectionMode === 'preset' ? `Preset` : `Custom Selection`;
+    badge.innerHTML = `<span>📅</span> <span>Selected Range (PHT): <strong>${startStr}</strong> &ndash; <strong>${endStr}</strong> (${dayCount} Days • ${modeLabel})</span>`;
+  }
+}
+
+// Graphical Calendar Renderer (Strict Manila Timezone with Multi-Day Range Highlighting)
 function renderCalendar() {
   const monthTitle = document.getElementById('calMonthYear');
   const grid = document.getElementById('calGrid');
@@ -404,37 +589,89 @@ function renderCalendar() {
     grid.appendChild(cell);
   }
   
-  const manilaToday = getManilaParts(new Date());
-  const selYear = selectedDate.getUTCFullYear();
-  const selMonth = selectedDate.getUTCMonth();
-  const selDay = selectedDate.getUTCDate();
+  const nowParts = getManilaParts(new Date());
+  const todayTime = makeManilaDate(nowParts.year, nowParts.month, nowParts.day).getTime();
   
+  const startTime = rangeStartDate.getTime();
+  const endTime = rangeEndDate.getTime();
+
   for (let day = 1; day <= totalDaysInMonth; day++) {
+    const cellDate = makeManilaDate(calYear, calMonth, day);
+    const cellTime = cellDate.getTime();
+    
     const cell = document.createElement('div');
     cell.className = 'cal-day-cell';
     cell.innerText = day;
     
-    if (calYear === selYear && calMonth === selMonth && day === selDay) {
-      cell.classList.add('selected');
-    }
-    
-    if (calYear === manilaToday.year && calMonth === manilaToday.month && day === manilaToday.day) {
+    // Today highlight
+    if (cellTime === todayTime) {
       cell.classList.add('today');
+    }
+
+    if (selectingStartDate !== null) {
+      // Range selection in progress
+      const selStartTime = selectingStartDate.getTime();
+      if (cellTime === selStartTime) {
+        cell.classList.add('range-start');
+        if (!hoveredDate || hoveredDate.getTime() === selStartTime) {
+          cell.classList.add('range-single');
+        }
+      }
+      
+      if (hoveredDate !== null) {
+        const hoverTime = hoveredDate.getTime();
+        const minH = Math.min(selStartTime, hoverTime);
+        const maxH = Math.max(selStartTime, hoverTime);
+        
+        if (cellTime > minH && cellTime < maxH) {
+          cell.classList.add('in-range-preview');
+        } else if (cellTime === hoverTime && hoverTime !== selStartTime) {
+          if (hoverTime > selStartTime) {
+            cell.classList.add('range-end');
+          } else {
+            cell.classList.add('range-start');
+          }
+        }
+      }
+    } else {
+      // Established range highlight
+      if (startTime === endTime) {
+        if (cellTime === startTime) {
+          cell.classList.add('range-start', 'range-end', 'range-single');
+        }
+      } else {
+        if (cellTime === startTime) {
+          cell.classList.add('range-start');
+        } else if (cellTime === endTime) {
+          cell.classList.add('range-end');
+        } else if (cellTime > startTime && cellTime < endTime) {
+          cell.classList.add('in-range');
+        }
+      }
     }
     
     cell.addEventListener('click', () => {
-      selectedDate = new Date(Date.UTC(calYear, calMonth, day, 12, 0, 0));
-      renderCalendar();
-      updateDashboard();
+      handleCalendarDateClick(cellDate);
+    });
+
+    cell.addEventListener('mouseenter', () => {
+      if (selectingStartDate !== null) {
+        hoveredDate = cellDate;
+        renderCalendar();
+      }
     });
     
     grid.appendChild(cell);
   }
-  
-  const selectedLabel = document.getElementById('selectedDayText');
-  if (selectedLabel) {
-    selectedLabel.innerText = `Selected (PHT): ${selectedDate.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`;
-  }
+
+  grid.addEventListener('mouseleave', () => {
+    if (selectingStartDate !== null && hoveredDate !== null) {
+      hoveredDate = null;
+      renderCalendar();
+    }
+  });
+
+  updateSelectedRangeText();
 }
 
 // Update All Views
@@ -442,8 +679,8 @@ function updateDashboard() {
   renderLiveGauges();
   renderCongestionHeatmap();
   renderDualTables();
-  render7DayMetrics();
-  render30MinAverageChart();
+  renderExecutiveSummaryMetrics();
+  renderAdaptiveTrendChart();
 }
 
 // Render Live Speedometer Gauges with Latency Tracking
@@ -504,10 +741,19 @@ function renderCongestionHeatmap() {
   if (!container) return;
   container.innerHTML = '';
 
-  const allLogs = coreRouterLogs.length > 0 ? coreRouterLogs : homeMikroLogs;
+  const startMs = rangeStartDate.getTime();
+  const endMs = rangeEndDate.getTime() + (24 * 60 * 60 * 1000) - 1;
+
+  const targetSource = coreRouterLogs.length > 0 ? coreRouterLogs : homeMikroLogs;
+  const filtered = targetSource.filter(l => {
+    const lDay = makeManilaDate(l.manila.year, l.manila.month, l.manila.day).getTime();
+    return lDay >= startMs && lDay <= endMs;
+  });
+
+  const activeLogs = filtered.length > 0 ? filtered : targetSource;
   
   const hourlyData = Array(24).fill(null).map(() => []);
-  allLogs.forEach(l => {
+  activeLogs.forEach(l => {
     const hr = l.manila.hour;
     if (hr >= 0 && hr < 24) {
       hourlyData[hr].push(l.speed_mbps);
@@ -551,7 +797,7 @@ function renderCongestionHeatmap() {
   }
 }
 
-// Side-by-Side Dual Tables (Strict Manila Date Filter)
+// Side-by-Side Dual Tables (Filtered by Selected Date Range)
 function renderDualTables() {
   const tbodyCore = document.getElementById('tbodyCoreRouter');
   const tbodyHome = document.getElementById('tbodyHomeMikro');
@@ -560,27 +806,24 @@ function renderDualTables() {
   tbodyCore.innerHTML = '';
   tbodyHome.innerHTML = '';
   
-  const selYear = selectedDate.getUTCFullYear();
-  const selMonth = selectedDate.getUTCMonth();
-  const selDay = selectedDate.getUTCDate();
+  const startMs = rangeStartDate.getTime();
+  const endMs = rangeEndDate.getTime() + (24 * 60 * 60 * 1000) - 1;
   
-  const filteredCore = coreRouterLogs.filter(l => 
-    l.manila.year === selYear &&
-    l.manila.month === selMonth &&
-    l.manila.day === selDay
-  ).sort((a, b) => b.dateObj - a.dateObj);
+  const filteredCore = coreRouterLogs.filter(l => {
+    const lDay = makeManilaDate(l.manila.year, l.manila.month, l.manila.day).getTime();
+    return lDay >= startMs && lDay <= endMs;
+  }).sort((a, b) => b.dateObj - a.dateObj);
   
-  const filteredHome = homeMikroLogs.filter(l => 
-    l.manila.year === selYear &&
-    l.manila.month === selMonth &&
-    l.manila.day === selDay
-  ).sort((a, b) => b.dateObj - a.dateObj);
+  const filteredHome = homeMikroLogs.filter(l => {
+    const lDay = makeManilaDate(l.manila.year, l.manila.month, l.manila.day).getTime();
+    return lDay >= startMs && lDay <= endMs;
+  }).sort((a, b) => b.dateObj - a.dateObj);
   
   if (filteredCore.length === 0) {
     tbodyCore.innerHTML = `
       <tr>
         <td colspan="3" style="text-align: center; color: #64748b; padding: 2rem 1rem;">
-          No CoreRouter speed test logs recorded for this date.<br>
+          No CoreRouter speed test logs recorded for the selected date range.<br>
           <small style="color: #475569;">Scheduled tests run automatically every 30 minutes.</small>
         </td>
       </tr>
@@ -607,7 +850,7 @@ function renderDualTables() {
     tbodyHome.innerHTML = `
       <tr>
         <td colspan="3" style="text-align: center; color: #64748b; padding: 2rem 1rem;">
-          No HomeMikro speed test logs recorded for this date.<br>
+          No HomeMikro speed test logs recorded for the selected date range.<br>
           <small style="color: #475569;">Scheduled tests run automatically every 30 minutes.</small>
         </td>
       </tr>
@@ -631,33 +874,49 @@ function renderDualTables() {
   }
 }
 
-// 7-Day SLA Metrics
-function render7DayMetrics() {
-  const allLogs = [...coreRouterLogs, ...homeMikroLogs];
+// Executive SLA Metrics (Dynamically Computed for Active Date Range)
+function renderExecutiveSummaryMetrics() {
+  const startMs = rangeStartDate.getTime();
+  const endMs = rangeEndDate.getTime() + (24 * 60 * 60 * 1000) - 1;
+  const dayCount = Math.max(1, Math.round((rangeEndDate.getTime() - rangeStartDate.getTime()) / (86400 * 1000)) + 1);
+
+  const allFilteredLogs = [...coreRouterLogs, ...homeMikroLogs].filter(l => {
+    const lDay = makeManilaDate(l.manila.year, l.manila.month, l.manila.day).getTime();
+    return lDay >= startMs && lDay <= endMs;
+  });
+
+  const titleElem = document.getElementById('metricsSectionTitle');
+  const avgLabelElem = document.getElementById('metricAvgSpeedLabel');
+  if (titleElem) {
+    titleElem.innerText = `${dayCount}-Day Executive Summary & SLA Performance Analysis`;
+  }
+  if (avgLabelElem) {
+    avgLabelElem.innerText = `${dayCount}-Day Average Speed`;
+  }
   
-  if (allLogs.length === 0) {
+  if (allFilteredLogs.length === 0) {
     document.getElementById('metricAvgSpeed').innerText = `0 Mbps`;
     document.getElementById('metricSlowSpeed').innerText = `0.0 hrs (0 tests)`;
     document.getElementById('metricOutage').innerText = `0 mins (0 events)`;
     document.getElementById('metricCompliance').innerText = `100%`;
     document.getElementById('metricComplianceFill').style.width = `100%`;
-    document.getElementById('metricComplianceSub').innerText = `0 authentic tests recorded so far`;
+    document.getElementById('metricComplianceSub').innerText = `0 authentic tests recorded in selected range`;
     return;
   }
   
-  const totalSpeed = allLogs.reduce((acc, l) => acc + l.speed_mbps, 0);
-  const avgSpeed = Math.round(totalSpeed / allLogs.length);
+  const totalSpeed = allFilteredLogs.reduce((acc, l) => acc + l.speed_mbps, 0);
+  const avgSpeed = Math.round(totalSpeed / allFilteredLogs.length);
   
-  const slowLogs = allLogs.filter(l => l.speed_mbps > 0 && l.speed_mbps < 200);
+  const slowLogs = allFilteredLogs.filter(l => l.speed_mbps > 0 && l.speed_mbps < 200);
   const slowCount = slowLogs.length;
   const slowHours = (slowCount * 30 / 60).toFixed(1);
   
-  const outageLogs = allLogs.filter(l => l.speed_mbps === 0);
+  const outageLogs = allFilteredLogs.filter(l => l.speed_mbps === 0);
   const outageCount = outageLogs.length;
   const outageMinutes = outageCount * 30;
   
-  const compliantLogs = allLogs.filter(l => l.speed_mbps >= 200);
-  const compliantPercent = ((compliantLogs.length / allLogs.length) * 100).toFixed(1);
+  const compliantLogs = allFilteredLogs.filter(l => l.speed_mbps >= 200);
+  const compliantPercent = ((compliantLogs.length / allFilteredLogs.length) * 100).toFixed(1);
   const slowPercent = (100 - parseFloat(compliantPercent)).toFixed(1);
   
   document.getElementById('metricAvgSpeed').innerText = `${avgSpeed} Mbps`;
@@ -665,69 +924,79 @@ function render7DayMetrics() {
   document.getElementById('metricOutage').innerText = `${outageMinutes} mins (${outageCount} events)`;
   document.getElementById('metricCompliance').innerText = `${compliantPercent}%`;
   document.getElementById('metricComplianceFill').style.width = `${compliantPercent}%`;
-  document.getElementById('metricComplianceSub').innerText = `${compliantPercent}% ≥ 200Mbps | ${slowPercent}% < 200Mbps (${allLogs.length} authentic tests recorded)`;
+  document.getElementById('metricComplianceSub').innerText = `${compliantPercent}% ≥ 200Mbps | ${slowPercent}% < 200Mbps (${allFilteredLogs.length} tests in range)`;
 }
 
-function setupRangeSelectorListeners() {
-  const buttons = document.querySelectorAll('.range-btn');
-  buttons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentChartRange = btn.getAttribute('data-range') || '7d';
-      renderAdaptiveTrendChart();
-    });
-  });
-}
-
-// Update All Views
-function updateDashboard() {
-  renderLiveGauges();
-  renderCongestionHeatmap();
-  renderDualTables();
-  render7DayMetrics();
-  renderAdaptiveTrendChart();
-}
-
-// Adaptive Trend Chart Renderer with Dynamic Bucket Sampling
+// Adaptive Trend Chart Renderer (Overridden by Calendar Range or Presets)
 function renderAdaptiveTrendChart() {
   const canvas = document.getElementById('speedTrendChart');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   
-  const allLogs = [...coreRouterLogs, ...homeMikroLogs];
-  
-  if (allLogs.length === 0) {
-    if (chartInstance) chartInstance.destroy();
-    return;
-  }
-  
-  const now = new Date();
-  let cutoffTime = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
-  let bucketMinutes = 30;
-  let titleText = '7-Day Speed Trend (30-Min Averages)';
-  let subtitleText = 'Aggregated in 30-minute increments across 7 days for balanced rolling trend';
+  const startMs = rangeStartDate.getTime();
+  const endMs = rangeEndDate.getTime() + (24 * 60 * 60 * 1000) - 1;
+  const dayCount = Math.max(1, Math.round((rangeEndDate.getTime() - rangeStartDate.getTime()) / (86400 * 1000)) + 1);
 
-  if (currentChartRange === '24h') {
-    cutoffTime = new Date(now.getTime() - (24 * 60 * 60 * 1000));
-    bucketMinutes = 15;
-    titleText = '24-Hour Speed Trend (15-Min Averages)';
-    subtitleText = 'Aggregated in 15-minute increments for high-precision short-term analysis';
-  } else if (currentChartRange === '7d') {
-    cutoffTime = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
-    bucketMinutes = 30;
-    titleText = '7-Day Speed Trend (30-Min Averages)';
-    subtitleText = 'Aggregated in 30-minute increments across 7 days (~336 max data points)';
-  } else if (currentChartRange === '14d') {
-    cutoffTime = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
-    bucketMinutes = 60;
-    titleText = '14-Day Speed Trend (1-Hour Averages)';
-    subtitleText = 'Aggregated in 1-hour increments across 2 weeks (~336 max data points)';
-  } else if (currentChartRange === '30d') {
-    cutoffTime = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
-    bucketMinutes = 240; // 4 hours
-    titleText = '30-Day Speed Trend (4-Hour Averages)';
-    subtitleText = 'Aggregated in 4-hour increments across 1 month (~180 max data points)';
+  const filteredCore = coreRouterLogs.filter(l => {
+    const lDay = makeManilaDate(l.manila.year, l.manila.month, l.manila.day).getTime();
+    return lDay >= startMs && lDay <= endMs;
+  });
+  const filteredHome = homeMikroLogs.filter(l => {
+    const lDay = makeManilaDate(l.manila.year, l.manila.month, l.manila.day).getTime();
+    return lDay >= startMs && lDay <= endMs;
+  });
+  const allFilteredLogs = [...filteredCore, ...filteredHome];
+
+  // Determine bucket resolution and title descriptions based on selection
+  let bucketMinutes = 30;
+  let titleText = `${dayCount}-Day Speed Trend (30-Min Averages)`;
+  let subtitleText = `Aggregated in 30-minute intervals across ${dayCount} days`;
+
+  if (currentSelectionMode === 'preset') {
+    if (activePreset === '24h') {
+      bucketMinutes = 15;
+      titleText = '24-Hour Speed Trend (15-Min Averages)';
+      subtitleText = 'Aggregated in 15-minute increments for high-precision short-term analysis';
+    } else if (activePreset === '7d') {
+      bucketMinutes = 30;
+      titleText = '7-Day Speed Trend (30-Min Averages)';
+      subtitleText = 'Aggregated in 30-minute increments across 7 days (~336 max data points)';
+    } else if (activePreset === '14d') {
+      bucketMinutes = 60;
+      titleText = '14-Day Speed Trend (1-Hour Averages)';
+      subtitleText = 'Aggregated in 1-hour increments across 2 weeks (~336 max data points)';
+    } else if (activePreset === '30d') {
+      bucketMinutes = 240;
+      titleText = '30-Day Speed Trend (4-Hour Averages)';
+      subtitleText = 'Aggregated in 4-hour increments across 1 month (~180 max data points)';
+    }
+  } else {
+    // Custom date range selected via Calendar
+    if (dayCount === 1) {
+      bucketMinutes = 15;
+      titleText = '1-Day Speed Trend (15-Min Averages)';
+      subtitleText = 'Custom 1-day selection aggregated in 15-minute intervals';
+    } else if (dayCount <= 3) {
+      bucketMinutes = 15;
+      titleText = `${dayCount}-Day Speed Trend (15-Min Averages)`;
+      subtitleText = `Custom ${dayCount}-day selection aggregated in 15-minute intervals`;
+    } else if (dayCount <= 7) {
+      bucketMinutes = 30;
+      titleText = `${dayCount}-Day Speed Trend (30-Min Averages)`;
+      subtitleText = `Custom ${dayCount}-day selection aggregated in 30-minute intervals`;
+    } else if (dayCount <= 14) {
+      bucketMinutes = 60;
+      titleText = `${dayCount}-Day Speed Trend (1-Hour Averages)`;
+      subtitleText = `Custom ${dayCount}-day selection aggregated in 1-hour intervals`;
+    } else if (dayCount <= 35) {
+      bucketMinutes = 240;
+      titleText = `${dayCount}-Day Speed Trend (4-Hour Averages)`;
+      subtitleText = `Custom ${dayCount}-day selection aggregated in 4-hour intervals`;
+    } else {
+      bucketMinutes = 1440;
+      titleText = `${dayCount}-Day Speed Trend (Daily Averages)`;
+      subtitleText = `Custom ${dayCount}-day selection aggregated in daily intervals`;
+    }
   }
 
   // Update UI titles
@@ -736,9 +1005,15 @@ function renderAdaptiveTrendChart() {
   if (titleElem) titleElem.innerText = titleText;
   if (subElem) subElem.innerText = subtitleText;
 
+  if (allFilteredLogs.length === 0) {
+    if (chartInstance) chartInstance.destroy();
+    chartInstance = null;
+    return;
+  }
+
   const labelsMap = new Map();
   
-  allLogs.filter(l => l.dateObj >= cutoffTime).forEach(l => {
+  allFilteredLogs.forEach(l => {
     const m = l.manila;
     let roundedHour = m.hour;
     let roundedMin = 0;
@@ -777,7 +1052,7 @@ function renderAdaptiveTrendChart() {
   const homeAvgList = [];
   
   sortedTimeSlots.forEach(slot => {
-    const logsCore = coreRouterLogs.filter(l => {
+    const logsCore = filteredCore.filter(l => {
       if (l.manila.year !== slot.mYear || l.manila.month !== slot.mMonth || l.manila.day !== slot.mDay) return false;
       if (slot.bucketMins < 60) {
         return l.manila.hour === slot.mHour && Math.floor(l.manila.minute / slot.bucketMins) * slot.bucketMins === slot.mMin;
@@ -789,7 +1064,7 @@ function renderAdaptiveTrendChart() {
     const avgCore = logsCore.length > 0 ? Math.round(logsCore.reduce((a, b) => a + b.speed_mbps, 0) / logsCore.length) : null;
     coreAvgList.push(avgCore);
     
-    const logsHome = homeMikroLogs.filter(l => {
+    const logsHome = filteredHome.filter(l => {
       if (l.manila.year !== slot.mYear || l.manila.month !== slot.mMonth || l.manila.day !== slot.mDay) return false;
       if (slot.bucketMins < 60) {
         return l.manila.hour === slot.mHour && Math.floor(l.manila.minute / slot.bucketMins) * slot.bucketMins === slot.mMin;
