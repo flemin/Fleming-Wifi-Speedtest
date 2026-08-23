@@ -493,31 +493,30 @@ function getSpeedColorStyle(speed) {
   }
 }
 
-// Calendar Date Click Handler (2-Click Range Selection)
+// Calendar Date Click Handler (2-Click Range Selection with Immediate View Updates)
 function handleCalendarDateClick(clickedDate) {
   if (selectingStartDate === null) {
-    // 1st click: Start range selection
+    // 1st click: Select this single date immediately, open range selection state
     selectingStartDate = clickedDate;
     rangeStartDate = clickedDate;
     rangeEndDate = clickedDate;
     currentSelectionMode = 'custom';
     hoveredDate = null;
 
-    // Remove active state from preset buttons (custom range overrides presets)
+    // Clear active state on preset buttons
     document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.quick-days .btn-pill').forEach(b => b.classList.remove('active'));
 
-    renderCalendar();
-    updateSelectedRangeText();
+    updateCalendarCellClasses();
+    updateDashboard();
   } else {
-    // 2nd click: Complete range selection
-    if (clickedDate.getTime() < selectingStartDate.getTime()) {
-      rangeStartDate = clickedDate;
-      rangeEndDate = selectingStartDate;
-    } else {
-      rangeStartDate = selectingStartDate;
-      rangeEndDate = clickedDate;
-    }
+    // 2nd click: Establish multi-day range between 1st date and 2nd date
+    const d1 = selectingStartDate;
+    const d2 = clickedDate;
+    
+    rangeStartDate = d1.getTime() <= d2.getTime() ? d1 : d2;
+    rangeEndDate = d1.getTime() <= d2.getTime() ? d2 : d1;
+    
     selectingStartDate = null;
     hoveredDate = null;
     currentSelectionMode = 'custom';
@@ -525,9 +524,69 @@ function handleCalendarDateClick(clickedDate) {
     document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.quick-days .btn-pill').forEach(b => b.classList.remove('active'));
 
-    renderCalendar();
+    updateCalendarCellClasses();
     updateDashboard();
   }
+}
+
+// Update Visual CSS Classes on Existing Calendar Cells (Fast & Non-Destructive)
+function updateCalendarCellClasses() {
+  const cells = document.querySelectorAll('#calGrid .cal-day-cell:not(.other-month)');
+  if (!cells || cells.length === 0) return;
+
+  const nowParts = getManilaParts(new Date());
+  const todayTime = makeManilaDate(nowParts.year, nowParts.month, nowParts.day).getTime();
+  
+  const startTime = rangeStartDate.getTime();
+  const endTime = rangeEndDate.getTime();
+
+  cells.forEach(cell => {
+    const timeAttr = cell.getAttribute('data-time');
+    if (!timeAttr) return;
+    const cellTime = parseInt(timeAttr, 10);
+
+    // Reset range classes
+    cell.classList.remove('range-start', 'range-end', 'range-single', 'in-range', 'in-range-preview');
+
+    if (cellTime === todayTime) {
+      cell.classList.add('today');
+    }
+
+    if (selectingStartDate !== null && hoveredDate !== null) {
+      // Hovering during active range selection
+      const selStartTime = selectingStartDate.getTime();
+      const hoverTime = hoveredDate.getTime();
+      const minH = Math.min(selStartTime, hoverTime);
+      const maxH = Math.max(selStartTime, hoverTime);
+
+      if (cellTime === minH && cellTime === maxH) {
+        cell.classList.add('range-start', 'range-end', 'range-single');
+      } else if (cellTime === minH) {
+        cell.classList.add('range-start');
+      } else if (cellTime === maxH) {
+        cell.classList.add('range-end');
+      } else if (cellTime > minH && cellTime < maxH) {
+        cell.classList.add('in-range-preview');
+      }
+    } else {
+      // Established date or range
+      if (startTime === endTime) {
+        if (cellTime === startTime) {
+          cell.classList.add('range-start', 'range-end', 'range-single');
+        }
+      } else {
+        if (cellTime === startTime) {
+          cell.classList.add('range-start');
+        } else if (cellTime === endTime) {
+          cell.classList.add('range-end');
+        } else if (cellTime > startTime && cellTime < endTime) {
+          cell.classList.add('in-range');
+        }
+      }
+    }
+  });
+
+  updateSelectedRangeText();
 }
 
 // Update Selected Range Badge Text
@@ -538,7 +597,7 @@ function updateSelectedRangeText() {
   if (selectingStartDate !== null) {
     badge.classList.add('selecting');
     const startStr = selectingStartDate.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
-    badge.innerHTML = `<span>⏳</span> <span>Selecting Range: Click 2nd date for end (Start: <strong>${startStr}</strong>)</span>`;
+    badge.innerHTML = `<span>⏳</span> <span>Selected: <strong>${startStr}</strong> (1 Day) • Click 2nd date for range</span>`;
     return;
   }
 
@@ -555,7 +614,7 @@ function updateSelectedRangeText() {
   }
 }
 
-// Graphical Calendar Renderer (Strict Manila Timezone with Multi-Day Range Highlighting)
+// Graphical Calendar Renderer (Initial Grid Construction)
 function renderCalendar() {
   const monthTitle = document.getElementById('calMonthYear');
   const grid = document.getElementById('calGrid');
@@ -588,12 +647,6 @@ function renderCalendar() {
     cell.innerText = prevMonthDays - i;
     grid.appendChild(cell);
   }
-  
-  const nowParts = getManilaParts(new Date());
-  const todayTime = makeManilaDate(nowParts.year, nowParts.month, nowParts.day).getTime();
-  
-  const startTime = rangeStartDate.getTime();
-  const endTime = rangeEndDate.getTime();
 
   for (let day = 1; day <= totalDaysInMonth; day++) {
     const cellDate = makeManilaDate(calYear, calMonth, day);
@@ -602,62 +655,17 @@ function renderCalendar() {
     const cell = document.createElement('div');
     cell.className = 'cal-day-cell';
     cell.innerText = day;
+    cell.setAttribute('data-time', cellTime.toString());
     
-    // Today highlight
-    if (cellTime === todayTime) {
-      cell.classList.add('today');
-    }
-
-    if (selectingStartDate !== null) {
-      // Range selection in progress
-      const selStartTime = selectingStartDate.getTime();
-      if (cellTime === selStartTime) {
-        cell.classList.add('range-start');
-        if (!hoveredDate || hoveredDate.getTime() === selStartTime) {
-          cell.classList.add('range-single');
-        }
-      }
-      
-      if (hoveredDate !== null) {
-        const hoverTime = hoveredDate.getTime();
-        const minH = Math.min(selStartTime, hoverTime);
-        const maxH = Math.max(selStartTime, hoverTime);
-        
-        if (cellTime > minH && cellTime < maxH) {
-          cell.classList.add('in-range-preview');
-        } else if (cellTime === hoverTime && hoverTime !== selStartTime) {
-          if (hoverTime > selStartTime) {
-            cell.classList.add('range-end');
-          } else {
-            cell.classList.add('range-start');
-          }
-        }
-      }
-    } else {
-      // Established range highlight
-      if (startTime === endTime) {
-        if (cellTime === startTime) {
-          cell.classList.add('range-start', 'range-end', 'range-single');
-        }
-      } else {
-        if (cellTime === startTime) {
-          cell.classList.add('range-start');
-        } else if (cellTime === endTime) {
-          cell.classList.add('range-end');
-        } else if (cellTime > startTime && cellTime < endTime) {
-          cell.classList.add('in-range');
-        }
-      }
-    }
-    
-    cell.addEventListener('click', () => {
+    cell.addEventListener('click', (e) => {
+      e.stopPropagation();
       handleCalendarDateClick(cellDate);
     });
 
     cell.addEventListener('mouseenter', () => {
       if (selectingStartDate !== null) {
         hoveredDate = cellDate;
-        renderCalendar();
+        updateCalendarCellClasses();
       }
     });
     
@@ -667,11 +675,11 @@ function renderCalendar() {
   grid.addEventListener('mouseleave', () => {
     if (selectingStartDate !== null && hoveredDate !== null) {
       hoveredDate = null;
-      renderCalendar();
+      updateCalendarCellClasses();
     }
   });
 
-  updateSelectedRangeText();
+  updateCalendarCellClasses();
 }
 
 // Update All Views
