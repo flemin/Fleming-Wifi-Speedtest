@@ -68,7 +68,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!initialDateLoaded && currentSelectionMode === 'preset') {
       autoSelectLatestActiveDate();
       initialDateLoaded = true;
+    }
+    // Only rebuild calendar DOM if user is NOT mid-selection
+    if (selectingStartDate === null) {
       renderCalendar();
+    } else {
+      // Just refresh the data dots without destroying existing cells
+      updateCalendarCellClasses();
     }
     updateDashboard();
   });
@@ -641,6 +647,11 @@ function updateSelectedRangeText() {
   }
 }
 
+// Single delegated event handler references (prevent duplicate listeners on re-render)
+let _calGridClickHandler = null;
+let _calGridMouseMoveHandler = null;
+let _calGridMouseLeaveHandler = null;
+
 // Graphical Calendar Renderer (Initial Grid Construction)
 function renderCalendar() {
   const monthTitle = document.getElementById('calMonthYear');
@@ -654,6 +665,12 @@ function renderCalendar() {
   const calMonth = calendarCurrentMonth.getUTCMonth();
   
   monthTitle.innerText = `${monthNames[calMonth]} ${calYear}`;
+  
+  // Remove old delegated listeners before clearing DOM
+  if (_calGridClickHandler) grid.removeEventListener('click', _calGridClickHandler);
+  if (_calGridMouseMoveHandler) grid.removeEventListener('mousemove', _calGridMouseMoveHandler);
+  if (_calGridMouseLeaveHandler) grid.removeEventListener('mouseleave', _calGridMouseLeaveHandler);
+
   grid.innerHTML = '';
   
   const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -677,34 +694,46 @@ function renderCalendar() {
 
   for (let day = 1; day <= totalDaysInMonth; day++) {
     const cellDate = makeManilaDate(calYear, calMonth, day);
-    const cellTime = cellDate.getTime();
-    
     const cell = document.createElement('div');
     cell.className = 'cal-day-cell';
     cell.innerText = day;
-    cell.setAttribute('data-time', cellTime.toString());
-    
-    cell.addEventListener('click', (e) => {
-      e.stopPropagation();
-      handleCalendarDateClick(cellDate);
-    });
-
-    cell.addEventListener('mouseenter', () => {
-      if (selectingStartDate !== null) {
-        hoveredDate = cellDate;
-        updateCalendarCellClasses();
-      }
-    });
-    
+    cell.setAttribute('data-time', cellDate.getTime().toString());
     grid.appendChild(cell);
   }
 
-  grid.addEventListener('mouseleave', () => {
+  // Attach DELEGATED listeners to the grid container (survives cell redraws)
+  _calGridClickHandler = (e) => {
+    const cell = e.target.closest('.cal-day-cell');
+    if (!cell || cell.classList.contains('other-month')) return;
+    const t = parseInt(cell.getAttribute('data-time'), 10);
+    if (isNaN(t)) return;
+    // Reconstruct date from data-time attribute (avoids closure stale reference issue)
+    handleCalendarDateClick(new Date(t));
+  };
+
+  _calGridMouseMoveHandler = (e) => {
+    if (selectingStartDate === null) return;
+    const cell = e.target.closest('.cal-day-cell');
+    if (!cell || cell.classList.contains('other-month')) return;
+    const t = parseInt(cell.getAttribute('data-time'), 10);
+    if (isNaN(t)) return;
+    const newHover = new Date(t);
+    if (!hoveredDate || hoveredDate.getTime() !== newHover.getTime()) {
+      hoveredDate = newHover;
+      updateCalendarCellClasses();
+    }
+  };
+
+  _calGridMouseLeaveHandler = () => {
     if (selectingStartDate !== null && hoveredDate !== null) {
       hoveredDate = null;
       updateCalendarCellClasses();
     }
-  });
+  };
+
+  grid.addEventListener('click', _calGridClickHandler);
+  grid.addEventListener('mousemove', _calGridMouseMoveHandler);
+  grid.addEventListener('mouseleave', _calGridMouseLeaveHandler);
 
   updateCalendarCellClasses();
 }
