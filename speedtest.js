@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 2. Fast Async Fetch: Load recent historical log files in parallel background
   loadHistoricalDataAsync().then(() => {
-    if (!initialDateLoaded) {
+    if (!initialDateLoaded && currentSelectionMode === 'preset') {
       autoSelectLatestActiveDate();
       initialDateLoaded = true;
       renderCalendar();
@@ -132,7 +132,7 @@ function setupEventListeners() {
     document.querySelectorAll('.quick-days .btn-pill').forEach(b => b.classList.remove('active'));
     document.getElementById('btnToday').classList.add('active');
     
-    renderCalendar();
+    updateCalendarCellClasses();
     updateDashboard();
   });
   
@@ -150,7 +150,7 @@ function setupEventListeners() {
     document.querySelectorAll('.quick-days .btn-pill').forEach(b => b.classList.remove('active'));
     document.getElementById('btnYesterday').classList.add('active');
     
-    renderCalendar();
+    updateCalendarCellClasses();
     updateDashboard();
   });
   
@@ -390,7 +390,11 @@ async function loadHistoricalDataAsync() {
       res = await fetch(`https://raw.githubusercontent.com/flemin/Fleming-Wifi-Speedtest/main/Device%20Speedtest%20Logs/logs_index.json?t=${cb}`);
     }
     if (res.ok) {
-      const logs = await res.json();
+      let rawText = await res.text();
+      if (rawText && rawText.charCodeAt(0) === 0xFEFF) {
+        rawText = rawText.slice(1);
+      }
+      const logs = JSON.parse(rawText);
       if (Array.isArray(logs)) {
         logs.forEach(insertLogEntry);
       }
@@ -540,33 +544,54 @@ function updateCalendarCellClasses() {
   const startTime = rangeStartDate.getTime();
   const endTime = rangeEndDate.getTime();
 
+  // Set of dates that have speed test logs recorded
+  const allLogs = [...coreRouterLogs, ...homeMikroLogs];
+  const loggedDateTimes = new Set();
+  allLogs.forEach(l => {
+    loggedDateTimes.add(makeManilaDate(l.manila.year, l.manila.month, l.manila.day).getTime());
+  });
+
   cells.forEach(cell => {
     const timeAttr = cell.getAttribute('data-time');
     if (!timeAttr) return;
     const cellTime = parseInt(timeAttr, 10);
 
-    // Reset range classes
-    cell.classList.remove('range-start', 'range-end', 'range-single', 'in-range', 'in-range-preview');
+    // Reset range and state classes
+    cell.classList.remove('range-start', 'range-end', 'range-single', 'in-range', 'in-range-preview', 'selecting-start', 'has-data');
+
+    if (loggedDateTimes.has(cellTime)) {
+      cell.classList.add('has-data');
+    }
 
     if (cellTime === todayTime) {
       cell.classList.add('today');
     }
 
-    if (selectingStartDate !== null && hoveredDate !== null) {
-      // Hovering during active range selection
+    if (selectingStartDate !== null) {
       const selStartTime = selectingStartDate.getTime();
-      const hoverTime = hoveredDate.getTime();
-      const minH = Math.min(selStartTime, hoverTime);
-      const maxH = Math.max(selStartTime, hoverTime);
+      
+      if (cellTime === selStartTime) {
+        cell.classList.add('selecting-start');
+      }
 
-      if (cellTime === minH && cellTime === maxH) {
-        cell.classList.add('range-start', 'range-end', 'range-single');
-      } else if (cellTime === minH) {
-        cell.classList.add('range-start');
-      } else if (cellTime === maxH) {
-        cell.classList.add('range-end');
-      } else if (cellTime > minH && cellTime < maxH) {
-        cell.classList.add('in-range-preview');
+      if (hoveredDate !== null) {
+        const hoverTime = hoveredDate.getTime();
+        const minH = Math.min(selStartTime, hoverTime);
+        const maxH = Math.max(selStartTime, hoverTime);
+
+        if (cellTime === minH && cellTime === maxH) {
+          cell.classList.add('range-start', 'range-end', 'range-single');
+        } else if (cellTime === minH) {
+          cell.classList.add('range-start');
+        } else if (cellTime === maxH) {
+          cell.classList.add('range-end');
+        } else if (cellTime > minH && cellTime < maxH) {
+          cell.classList.add('in-range-preview');
+        }
+      } else {
+        if (cellTime === selStartTime) {
+          cell.classList.add('range-start', 'range-end', 'range-single');
+        }
       }
     } else {
       // Established date or range
@@ -595,13 +620,15 @@ function updateSelectedRangeText() {
   if (!badge) return;
 
   if (selectingStartDate !== null) {
+    badge.classList.remove('locked');
     badge.classList.add('selecting');
     const startStr = selectingStartDate.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
-    badge.innerHTML = `<span>⏳</span> <span>Selected: <strong>${startStr}</strong> (1 Day) • Click 2nd date for range</span>`;
+    badge.innerHTML = `<span>📍</span> <span>Start: <strong>${startStr}</strong> • Now click your End Date</span>`;
     return;
   }
 
   badge.classList.remove('selecting');
+  badge.classList.add('locked');
   const startStr = rangeStartDate.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
   const endStr = rangeEndDate.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
   const dayCount = Math.max(1, Math.round((rangeEndDate.getTime() - rangeStartDate.getTime()) / (86400 * 1000)) + 1);
@@ -610,7 +637,7 @@ function updateSelectedRangeText() {
     badge.innerHTML = `<span>📅</span> <span>Selected Date (PHT): <strong>${startStr}</strong> (1 Day)</span>`;
   } else {
     const modeLabel = currentSelectionMode === 'preset' ? `Preset` : `Custom Selection`;
-    badge.innerHTML = `<span>📅</span> <span>Selected Range (PHT): <strong>${startStr}</strong> &ndash; <strong>${endStr}</strong> (${dayCount} Days • ${modeLabel})</span>`;
+    badge.innerHTML = `<span>✅</span> <span>Selected Range (PHT): <strong>${startStr}</strong> &ndash; <strong>${endStr}</strong> (${dayCount} Days • ${modeLabel})</span>`;
   }
 }
 
