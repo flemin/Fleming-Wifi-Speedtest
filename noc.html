@@ -423,27 +423,27 @@
           </div>
         </div>
         <div class="user-metric-card">
-          <div class="icon">📥</div>
-          <div class="details">
-            <span class="lbl">Cumulative Download</span>
-            <span class="val" style="color: #38bdf8;" id="apTotalDownloadVal">-- GB</span>
-            <span class="sub">Total Received Data</span>
-          </div>
-        </div>
-        <div class="user-metric-card">
-          <div class="icon">📤</div>
-          <div class="details">
-            <span class="lbl">Cumulative Upload</span>
-            <span class="val" style="color: #c084fc;" id="apTotalUploadVal">-- GB</span>
-            <span class="sub">Total Transmitted Data</span>
-          </div>
-        </div>
-        <div class="user-metric-card">
           <div class="icon">⚡</div>
           <div class="details">
-            <span class="lbl">Total Data Consumed</span>
+            <span class="lbl">60-Day Rolling Traffic</span>
             <span class="val" style="color: #34d399;" id="apTotalTrafficVal">-- GB</span>
-            <span class="sub" id="apAvgRateSubVal">Across all site APs</span>
+            <span class="sub">Top-15 APs (OC200 API)</span>
+          </div>
+        </div>
+        <div class="user-metric-card">
+          <div class="icon">📊</div>
+          <div class="details">
+            <span class="lbl">Data Source</span>
+            <span class="val" style="color: #fbbf24; font-size: 0.85rem;">60-Day Window</span>
+            <span class="sub">Cumulative since AP reboot</span>
+          </div>
+        </div>
+        <div class="user-metric-card">
+          <div class="icon">ℹ️</div>
+          <div class="details">
+            <span class="lbl">Coverage Note</span>
+            <span class="val" style="color: #94a3b8; font-size: 0.75rem;">Top-15 only</span>
+            <span class="sub">Others show N/A</span>
           </div>
         </div>
       </div>
@@ -465,8 +465,11 @@
       <div class="card-panel">
         <div class="panel-header" style="flex-wrap: wrap; gap: 0.75rem;">
           <div class="panel-title">
-            <span>📶</span> Access Point Fleet — Uptime, Cumulative Traffic &amp; Daily Burn Rate
+            <span>📶</span> Access Point Fleet — Uptime &amp; 60-Day Rolling Traffic
             <span id="filteredApCount" style="font-size: 0.8rem; color: #38bdf8; font-weight: 700;">(--)</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 0.72rem; color: var(--muted); background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2); border-radius: 6px; padding: 0.25rem 0.6rem;">ℹ️ Traffic = OC200 60-day rolling window. Top-15 APs only; others show N/A.</span>
           </div>
           <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; max-width: 400px;">
             <input type="text" id="apSearchInput" class="input-field" placeholder="Search AP name, IP, MAC, model, or location..." oninput="filterApsTable()">
@@ -482,10 +485,8 @@
                 <th>IP &amp; MAC Address</th>
                 <th>Uptime (Powered On)</th>
                 <th>Active Clients</th>
-                <th>Download (GB)</th>
-                <th>Upload (GB)</th>
-                <th>Total Traffic</th>
-                <th>⚡ Rate (GB / Day)</th>
+                <th title="60-day rolling total from OC200 traffic-distribution API. Only top-15 busiest APs have data.">60-Day Traffic ℹ️</th>
+                <th title="Average GB per day calculated over min(uptime, 60d). N/A for APs outside top-15.">⚡ Rate (GB / Day) ℹ️</th>
                 <th>CPU / RAM</th>
               </tr>
             </thead>
@@ -753,20 +754,12 @@
       if (!data) return;
       const aps = data.aps || [];
 
-      let totalDown = 0;
-      let totalUp = 0;
-      let totalAll = 0;
-      aps.forEach(a => {
-        totalDown += (a.downloadGb || 0);
-        totalUp += (a.uploadGb || 0);
-        totalAll += (a.totalTrafficGb || 0);
-      });
+      // Only sum APs that have actual traffic data (top-15 in 60-day rolling window)
+      let totalAll = aps.reduce((sum, a) => sum + (a.totalTrafficGb != null ? Number(a.totalTrafficGb) : 0), 0);
 
       if (document.getElementById('apTotalCountVal')) {
         document.getElementById('apTotalCountVal').innerText = `${data.totalAps || aps.length} APs`;
         document.getElementById('apOnlineSubVal').innerText = `${data.onlineAps || 0} Online • ${data.offlineAps || 0} Offline`;
-        document.getElementById('apTotalDownloadVal').innerText = `${totalDown.toLocaleString('en-US', {maximumFractionDigits: 1})} GB`;
-        document.getElementById('apTotalUploadVal').innerText = `${totalUp.toLocaleString('en-US', {maximumFractionDigits: 1})} GB`;
         document.getElementById('apTotalTrafficVal').innerText = `${totalAll.toLocaleString('en-US', {maximumFractionDigits: 1})} GB`;
         if (document.getElementById('apSyncTime')) {
           document.getElementById('apSyncTime').innerText = `Mirror Snapshot: ${data.timestampPht || 'Live'} PHT`;
@@ -896,13 +889,17 @@
       }
 
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--muted); padding: 2.5rem 1rem;">🔍 No Access Points matched the selected location or search filter.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--muted); padding: 2.5rem 1rem;">🔍 No Access Points matched the selected location or search filter.</td></tr>`;
         return;
       }
 
       list.forEach(a => {
         const isOnline = a.status === 'Connected';
         const locClass = a.location.includes('Resort') ? 'resort' : (a.location === 'Home' ? 'home' : '');
+        const hasTraffic = a.totalTrafficGb !== null && a.totalTrafficGb !== undefined;
+        const trafficCell = hasTraffic
+          ? `<span style="font-weight: 800; color: #fff; font-size: 0.9rem;">${Number(a.totalTrafficGb).toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})} GB</span>`
+          : `<span style="color: var(--dim); font-size: 0.8rem; font-style: italic;">N/A <span title="This AP is outside the top-15 in OC200 traffic-distribution">ℹ️</span></span>`;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -932,18 +929,8 @@
             <span style="font-weight: 800; color: #38bdf8; font-size: 0.86rem;">${a.activeClients || 0}</span>
             <span style="font-size: 0.74rem; color: var(--muted);"> active</span>
           </td>
-          <td>
-            <span style="font-weight: 700; color: #38bdf8; font-size: 0.86rem;">${(a.downloadGb || 0).toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})} GB</span>
-          </td>
-          <td>
-            <span style="font-weight: 700; color: #c084fc; font-size: 0.86rem;">${(a.uploadGb || 0).toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})} GB</span>
-          </td>
-          <td>
-            <span style="font-weight: 800; color: #fff; font-size: 0.9rem;">${(a.totalTrafficGb || 0).toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})} GB</span>
-          </td>
-          <td>
-            ${getRateBadge(a.gbPerDay)}
-          </td>
+          <td>${trafficCell}</td>
+          <td>${hasTraffic && a.gbPerDay !== null ? getRateBadge(a.gbPerDay) : '<span style="color: var(--dim); font-size: 0.8rem; font-style: italic;">N/A</span>'}</td>
           <td>
             <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: var(--muted);">
               <span>CPU: <strong style="color: #34d399;">${a.cpuUtil || '--'}</strong></span>
