@@ -465,11 +465,11 @@
       <div class="card-panel">
         <div class="panel-header" style="flex-wrap: wrap; gap: 0.75rem;">
           <div class="panel-title">
-            <span>📶</span> Access Point Fleet — Uptime &amp; 60-Day Rolling Traffic
+            <span>📶</span> Access Point Fleet — Uptime, Active Client Traffic &amp; Rate
             <span id="filteredApCount" style="font-size: 0.8rem; color: #38bdf8; font-weight: 700;">(--)</span>
           </div>
           <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <span style="font-size: 0.72rem; color: var(--muted); background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2); border-radius: 6px; padding: 0.25rem 0.6rem;">ℹ️ Traffic = OC200 60-day rolling window. Top-15 APs only; others show N/A.</span>
+            <span style="font-size: 0.72rem; color: var(--muted); background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2); border-radius: 6px; padding: 0.25rem 0.6rem;">ℹ️ Traffic = Real-time active client session bytes aggregated per AP.</span>
           </div>
           <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; max-width: 400px;">
             <input type="text" id="apSearchInput" class="input-field" placeholder="Search AP name, IP, MAC, model, or location..." oninput="filterApsTable()">
@@ -485,8 +485,10 @@
                 <th>IP &amp; MAC Address</th>
                 <th>Uptime (Powered On)</th>
                 <th>Active Clients</th>
-                <th title="60-day rolling total from OC200 traffic-distribution API. Only top-15 busiest APs have data.">60-Day Traffic ℹ️</th>
-                <th title="Average GB per day calculated over min(uptime, 60d). N/A for APs outside top-15.">⚡ Rate (GB / Day) ℹ️</th>
+                <th title="Total bytes downloaded by currently active clients connected to this AP">Download (GB)</th>
+                <th title="Total bytes uploaded by currently active clients connected to this AP">Upload (GB)</th>
+                <th title="Total live active session data consumed">Session Total (GB)</th>
+                <th title="Average daily burn rate based on current active session traffic">⚡ Session Rate</th>
                 <th>CPU / RAM</th>
               </tr>
             </thead>
@@ -900,17 +902,16 @@
       }
 
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--muted); padding: 2.5rem 1rem;">🔍 No Access Points matched the selected location or search filter.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--muted); padding: 2.5rem 1rem;">🔍 No Access Points matched the selected location or search filter.</td></tr>`;
         return;
       }
 
       list.forEach(a => {
         const isOnline = a.status === 'Connected';
         const locClass = a.location.includes('Resort') ? 'resort' : (a.location === 'Home' ? 'home' : '');
-        const hasTraffic = a.totalTrafficGb !== null && a.totalTrafficGb !== undefined;
-        const trafficCell = hasTraffic
-          ? `<span style="font-weight: 800; color: #fff; font-size: 0.9rem;">${Number(a.totalTrafficGb).toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})} GB</span>`
-          : `<span style="color: var(--dim); font-size: 0.8rem; font-style: italic;">N/A <span title="This AP is outside the top-15 in OC200 traffic-distribution">ℹ️</span></span>`;
+        const downVal = (a.downloadGb || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const upVal = (a.uploadGb || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const totalVal = (a.totalTrafficGb || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -940,8 +941,18 @@
             <span style="font-weight: 800; color: #38bdf8; font-size: 0.86rem;">${a.activeClients || 0}</span>
             <span style="font-size: 0.74rem; color: var(--muted);"> active</span>
           </td>
-          <td>${trafficCell}</td>
-          <td>${hasTraffic && a.gbPerDay !== null ? getRateBadge(a.gbPerDay) : '<span style="color: var(--dim); font-size: 0.8rem; font-style: italic;">N/A</span>'}</td>
+          <td>
+            <span style="font-weight: 700; color: #38bdf8; font-size: 0.86rem;">${downVal} GB</span>
+          </td>
+          <td>
+            <span style="font-weight: 700; color: #c084fc; font-size: 0.86rem;">${upVal} GB</span>
+          </td>
+          <td>
+            <span style="font-weight: 800; color: #34d399; font-size: 0.9rem;">${totalVal} GB</span>
+          </td>
+          <td>
+            ${getRateBadge(a.gbPerDay)}
+          </td>
           <td>
             <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: var(--muted);">
               <span>CPU: <strong style="color: #34d399;">${a.cpuUtil || '--'}</strong></span>
