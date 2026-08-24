@@ -423,27 +423,27 @@
           </div>
         </div>
         <div class="user-metric-card">
+          <div class="icon">📥</div>
+          <div class="details">
+            <span class="lbl">Site Download (7d)</span>
+            <span class="val" style="color: #38bdf8;" id="apSite7dDownVal">-- GB</span>
+            <span class="sub" id="apSite7dUpSub">Upload: -- GB</span>
+          </div>
+        </div>
+        <div class="user-metric-card">
+          <div class="icon">📅</div>
+          <div class="details">
+            <span class="lbl">Site Download (30d)</span>
+            <span class="val" style="color: #34d399;" id="apSite30dDownVal">-- GB</span>
+            <span class="sub" id="apSite30dUpSub">Upload: -- GB</span>
+          </div>
+        </div>
+        <div class="user-metric-card">
           <div class="icon">⚡</div>
           <div class="details">
-            <span class="lbl">60-Day Rolling Traffic</span>
-            <span class="val" style="color: #34d399;" id="apTotalTrafficVal">-- GB</span>
-            <span class="sub">Top-15 APs (OC200 API)</span>
-          </div>
-        </div>
-        <div class="user-metric-card">
-          <div class="icon">📊</div>
-          <div class="details">
-            <span class="lbl">Data Source</span>
-            <span class="val" style="color: #fbbf24; font-size: 0.85rem;">60-Day Window</span>
-            <span class="sub">Cumulative since AP reboot</span>
-          </div>
-        </div>
-        <div class="user-metric-card">
-          <div class="icon">ℹ️</div>
-          <div class="details">
-            <span class="lbl">Coverage Note</span>
-            <span class="val" style="color: #94a3b8; font-size: 0.75rem;">Top-15 only</span>
-            <span class="sub">Others show N/A</span>
+            <span class="lbl">Site Total (30d)</span>
+            <span class="val" style="color: #fbbf24;" id="apSite30dTotalVal">-- GB</span>
+            <span class="sub" id="apSyncTime">Mirror AP Snapshot</span>
           </div>
         </div>
       </div>
@@ -754,13 +754,24 @@
       if (!data) return;
       const aps = data.aps || [];
 
-      // Only sum APs that have actual traffic data (top-15 in 60-day rolling window)
-      let totalAll = aps.reduce((sum, a) => sum + (a.totalTrafficGb != null ? Number(a.totalTrafficGb) : 0), 0);
-
+      // Fleet count
       if (document.getElementById('apTotalCountVal')) {
         document.getElementById('apTotalCountVal').innerText = `${data.totalAps || aps.length} APs`;
         document.getElementById('apOnlineSubVal').innerText = `${data.onlineAps || 0} Online • ${data.offlineAps || 0} Offline`;
-        document.getElementById('apTotalTrafficVal').innerText = `${totalAll.toLocaleString('en-US', {maximumFractionDigits: 1})} GB`;
+
+        // Site-wide 7-day and 30-day traffic from traffic-activities API
+        const fmt = (v) => (v != null && v !== undefined)
+          ? Number(v).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+          : '--';
+
+        if (document.getElementById('apSite7dDownVal')) {
+          document.getElementById('apSite7dDownVal').innerText = `${fmt(data.site7dDownGb)} GB`;
+          document.getElementById('apSite7dUpSub').innerText = `Upload: ${fmt(data.site7dUpGb)} GB`;
+          document.getElementById('apSite30dDownVal').innerText = `${fmt(data.site30dDownGb)} GB`;
+          document.getElementById('apSite30dUpSub').innerText = `Upload: ${fmt(data.site30dUpGb)} GB`;
+          document.getElementById('apSite30dTotalVal').innerText = `${fmt(data.site30dTotalGb)} GB`;
+        }
+
         if (document.getElementById('apSyncTime')) {
           document.getElementById('apSyncTime').innerText = `Mirror Snapshot: ${data.timestampPht || 'Live'} PHT`;
         }
