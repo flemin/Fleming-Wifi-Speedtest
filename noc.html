@@ -347,6 +347,9 @@
         <button class="nav-tab-btn active" onclick="switchNocView('fleetViewSection', this)">
           <span>🌐</span> Fleet NOC
         </button>
+        <button class="nav-tab-btn" onclick="switchNocView('apsViewSection', this)">
+          <span>📶</span> Access Points (APs)
+        </button>
         <button class="nav-tab-btn" onclick="switchNocView('activeUsersViewSection', this)">
           <span>👥</span> Active Users
         </button>
@@ -404,6 +407,93 @@
             <!-- Populated by JS -->
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- VIEW: ACCESS POINTS (APs) CUMULATIVE TRAFFIC & DAILY RATES -->
+    <div id="apsViewSection" class="view-section">
+      <!-- Top Metrics Banner -->
+      <div class="active-users-banner">
+        <div class="user-metric-card">
+          <div class="icon">📶</div>
+          <div class="details">
+            <span class="lbl">Total Fleet APs</span>
+            <span class="val" id="apTotalCountVal">-- APs</span>
+            <span class="sub" id="apOnlineSubVal">-- Online</span>
+          </div>
+        </div>
+        <div class="user-metric-card">
+          <div class="icon">📥</div>
+          <div class="details">
+            <span class="lbl">Cumulative Download</span>
+            <span class="val" style="color: #38bdf8;" id="apTotalDownloadVal">-- GB</span>
+            <span class="sub">Total Received Data</span>
+          </div>
+        </div>
+        <div class="user-metric-card">
+          <div class="icon">📤</div>
+          <div class="details">
+            <span class="lbl">Cumulative Upload</span>
+            <span class="val" style="color: #c084fc;" id="apTotalUploadVal">-- GB</span>
+            <span class="sub">Total Transmitted Data</span>
+          </div>
+        </div>
+        <div class="user-metric-card">
+          <div class="icon">⚡</div>
+          <div class="details">
+            <span class="lbl">Total Data Consumed</span>
+            <span class="val" style="color: #34d399;" id="apTotalTrafficVal">-- GB</span>
+            <span class="sub" id="apAvgRateSubVal">Across all site APs</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location Filter Cards Grid -->
+      <div class="card-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>📍</span> Filter APs by Site Location
+          </div>
+          <span style="font-size: 0.74rem; color: var(--muted);" id="apSyncTime">Mirror AP Snapshot</span>
+        </div>
+        <div class="location-cards-grid" id="apLocationCardsGrid">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- AP Table Panel -->
+      <div class="card-panel">
+        <div class="panel-header" style="flex-wrap: wrap; gap: 0.75rem;">
+          <div class="panel-title">
+            <span>📶</span> Access Point Fleet — Uptime, Cumulative Traffic &amp; Daily Burn Rate
+            <span id="filteredApCount" style="font-size: 0.8rem; color: #38bdf8; font-weight: 700;">(--)</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; max-width: 400px;">
+            <input type="text" id="apSearchInput" class="input-field" placeholder="Search AP name, IP, MAC, model, or location..." oninput="filterApsTable()">
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Access Point &amp; Model</th>
+                <th>Location</th>
+                <th>IP &amp; MAC Address</th>
+                <th>Uptime (Powered On)</th>
+                <th>Active Clients</th>
+                <th>Download (GB)</th>
+                <th>Upload (GB)</th>
+                <th>Total Traffic</th>
+                <th>⚡ Rate (GB / Day)</th>
+                <th>CPU / RAM</th>
+              </tr>
+            </thead>
+            <tbody id="apsTableBody">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -621,6 +711,7 @@
       allDevices = data.devices || [...mikros, ...switches];
       incidentEvents = data.incidents || [];
       activeUsersData = data.activeClients || { totalClients: 0, totalTrafficGb: 0, locations: [], clients: [] };
+      apReportData = data.apsReport || { totalAps: 0, onlineAps: 0, offlineAps: 0, locations: [], aps: [] };
 
       if (data.timestamp) {
         document.getElementById('mirrorLastUpdate').innerText = `⚡ Cloud Snapshot Updated: ${data.timestamp} PHT`;
@@ -649,6 +740,220 @@
       renderIncidentLog();
       renderLocationCards();
       filterActiveClientsTable();
+      applyApReportData(apReportData);
+    }
+
+    // =========================================================================
+    // ACCESS POINTS (APs) TELEMETRY & DAILY RATES ENGINE
+    // =========================================================================
+    let apReportData = { totalAps: 0, onlineAps: 0, offlineAps: 0, locations: [], aps: [] };
+    let selectedApLocationFilter = 'all';
+
+    function applyApReportData(data) {
+      if (!data) return;
+      const aps = data.aps || [];
+
+      let totalDown = 0;
+      let totalUp = 0;
+      let totalAll = 0;
+      aps.forEach(a => {
+        totalDown += (a.downloadGb || 0);
+        totalUp += (a.uploadGb || 0);
+        totalAll += (a.totalTrafficGb || 0);
+      });
+
+      if (document.getElementById('apTotalCountVal')) {
+        document.getElementById('apTotalCountVal').innerText = `${data.totalAps || aps.length} APs`;
+        document.getElementById('apOnlineSubVal').innerText = `${data.onlineAps || 0} Online • ${data.offlineAps || 0} Offline`;
+        document.getElementById('apTotalDownloadVal').innerText = `${totalDown.toLocaleString('en-US', {maximumFractionDigits: 1})} GB`;
+        document.getElementById('apTotalUploadVal').innerText = `${totalUp.toLocaleString('en-US', {maximumFractionDigits: 1})} GB`;
+        document.getElementById('apTotalTrafficVal').innerText = `${totalAll.toLocaleString('en-US', {maximumFractionDigits: 1})} GB`;
+        if (document.getElementById('apSyncTime')) {
+          document.getElementById('apSyncTime').innerText = `Mirror Snapshot: ${data.timestampPht || 'Live'} PHT`;
+        }
+      }
+
+      renderApLocationCards();
+      filterApsTable();
+    }
+
+    function renderApLocationCards() {
+      const grid = document.getElementById('apLocationCardsGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const aps = apReportData.aps || [];
+      const totalAll = aps.reduce((sum, a) => sum + (a.totalTrafficGb || 0), 0);
+
+      // 1. "All Locations" Master Card
+      const allCard = document.createElement('div');
+      allCard.className = `location-card ${selectedApLocationFilter === 'all' ? 'selected' : ''}`;
+      allCard.onclick = () => selectApLocationFilter('all');
+      allCard.innerHTML = `
+        <div class="location-card-header">
+          <span class="location-card-title">🌐 All Site APs</span>
+          <span class="location-count-badge">${aps.length}</span>
+        </div>
+        <div class="location-card-traffic">
+          <span>📊</span> ${totalAll.toLocaleString('en-US', {maximumFractionDigits: 1})} GB Total Consumed
+        </div>
+        <div class="location-card-aps">Across all deployed EAP units</div>
+      `;
+      grid.appendChild(allCard);
+
+      // 2. Location Cards
+      const locGroups = {};
+      aps.forEach(a => {
+        const l = a.location || 'General';
+        if (!locGroups[l]) locGroups[l] = { name: l, count: 0, online: 0, totalGb: 0 };
+        locGroups[l].count++;
+        if (a.status === 'Connected') locGroups[l].online++;
+        locGroups[l].totalGb += (a.totalTrafficGb || 0);
+      });
+
+      Object.values(locGroups).sort((a, b) => b.totalGb - a.totalGb).forEach(loc => {
+        const card = document.createElement('div');
+        card.className = `location-card ${selectedApLocationFilter === loc.name ? 'selected' : ''}`;
+        card.onclick = () => selectApLocationFilter(loc.name);
+
+        let locIcon = '📍';
+        if (loc.name.includes('Resort')) locIcon = '🏖️';
+        else if (loc.name === 'Home') locIcon = '🏠';
+        else if (loc.name === 'Danilo' || loc.name === 'Ruel' || loc.name === 'Bobs') locIcon = '👤';
+
+        card.innerHTML = `
+          <div class="location-card-header">
+            <span class="location-card-title">${locIcon} ${loc.name}</span>
+            <span class="location-count-badge">${loc.count} AP${loc.count === 1 ? '' : 's'}</span>
+          </div>
+          <div class="location-card-traffic">
+            <span>⚡</span> ${loc.totalGb.toLocaleString('en-US', {maximumFractionDigits: 1})} GB (${loc.online} Online)
+          </div>
+          <div class="location-card-aps">${loc.online === loc.count ? '🟢 All Online' : '⚠️ Has Offline Units'}</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function selectApLocationFilter(locName) {
+      selectedApLocationFilter = locName;
+      renderApLocationCards();
+      filterApsTable();
+    }
+
+    function getRateBadge(gbPerDay) {
+      const rate = Number(gbPerDay) || 0;
+      let color = '#38bdf8';
+      let bg = 'rgba(56, 189, 248, 0.12)';
+      let border = 'rgba(56, 189, 248, 0.3)';
+      let icon = '⚡';
+
+      if (rate >= 200) {
+        color = '#f87171';
+        bg = 'rgba(239, 68, 68, 0.15)';
+        border = 'rgba(239, 68, 68, 0.4)';
+        icon = '🔥';
+      } else if (rate >= 50) {
+        color = '#fbbf24';
+        bg = 'rgba(251, 191, 36, 0.15)';
+        border = 'rgba(251, 191, 36, 0.4)';
+        icon = '⚡';
+      } else if (rate >= 10) {
+        color = '#34d399';
+        bg = 'rgba(52, 211, 153, 0.15)';
+        border = 'rgba(52, 211, 153, 0.4)';
+        icon = '📈';
+      }
+
+      return `<span style="display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 0.84rem; padding: 0.2rem 0.55rem; border-radius: 6px; background: ${bg}; color: ${color}; border: 1px solid ${border};">${icon} ${rate.toFixed(2)} GB/d</span>`;
+    }
+
+    function filterApsTable() {
+      const search = (document.getElementById('apSearchInput')?.value || '').toLowerCase().trim();
+      const tbody = document.getElementById('apsTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      let list = apReportData.aps || [];
+
+      if (selectedApLocationFilter !== 'all') {
+        list = list.filter(a => a.location === selectedApLocationFilter);
+      }
+
+      if (search) {
+        list = list.filter(a =>
+          (a.name && a.name.toLowerCase().includes(search)) ||
+          (a.ip && a.ip.toLowerCase().includes(search)) ||
+          (a.mac && a.mac.toLowerCase().includes(search)) ||
+          (a.model && a.model.toLowerCase().includes(search)) ||
+          (a.location && a.location.toLowerCase().includes(search))
+        );
+      }
+
+      const countBadge = document.getElementById('filteredApCount');
+      if (countBadge) {
+        countBadge.innerText = `(${list.length} shown of ${apReportData.totalAps || 0})`;
+      }
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--muted); padding: 2.5rem 1rem;">🔍 No Access Points matched the selected location or search filter.</td></tr>`;
+        return;
+      }
+
+      list.forEach(a => {
+        const isOnline = a.status === 'Connected';
+        const locClass = a.location.includes('Resort') ? 'resort' : (a.location === 'Home' ? 'home' : '');
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <span class="status-badge ${isOnline ? 'online' : 'offline'}">
+              <span class="status-dot"></span>
+              <span>${isOnline ? 'Online' : 'Offline'}</span>
+            </span>
+          </td>
+          <td>
+            <div style="font-weight: 700; color: #fff; font-size: 0.88rem;">${a.name}</div>
+            <div style="font-size: 0.72rem; color: var(--muted);">${a.model}</div>
+          </td>
+          <td>
+            <span class="loc-badge ${locClass}">${a.location}</span>
+          </td>
+          <td>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #38bdf8;">${a.ip}</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--dim);">${a.mac}</div>
+          </td>
+          <td>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 600; color: ${isOnline ? '#a5b4fc' : '#f87171'};">
+              ${a.uptimeStr || '--'}
+            </span>
+          </td>
+          <td>
+            <span style="font-weight: 800; color: #38bdf8; font-size: 0.86rem;">${a.activeClients || 0}</span>
+            <span style="font-size: 0.74rem; color: var(--muted);"> active</span>
+          </td>
+          <td>
+            <span style="font-weight: 700; color: #38bdf8; font-size: 0.86rem;">${(a.downloadGb || 0).toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})} GB</span>
+          </td>
+          <td>
+            <span style="font-weight: 700; color: #c084fc; font-size: 0.86rem;">${(a.uploadGb || 0).toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})} GB</span>
+          </td>
+          <td>
+            <span style="font-weight: 800; color: #fff; font-size: 0.9rem;">${(a.totalTrafficGb || 0).toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})} GB</span>
+          </td>
+          <td>
+            ${getRateBadge(a.gbPerDay)}
+          </td>
+          <td>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: var(--muted);">
+              <span>CPU: <strong style="color: #34d399;">${a.cpuUtil || '--'}</strong></span>
+              <span style="margin: 0 3px;">|</span>
+              <span>RAM: <strong style="color: #38bdf8;">${a.memUtil || '--'}</strong></span>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
 
     function renderLocationCards() {
