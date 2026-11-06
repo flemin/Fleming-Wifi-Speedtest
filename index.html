@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Fleming WiFi | MikroTik Speedtest Analytics & Network Monitor</title>
-  <meta name="description" content="Real-time continuous speedtest log monitoring for CoreRouter and HomeMikro devices with live gauge meters, 24-hour congestion heatmap, latency tracking, 7-day 30-min averages, and SLA tracking.">
+  <title>Fleming WiFi | ISP1 (ether1) Uptime, Outage &amp; Throughput Monitor</title>
+  <meta name="description" content="Real-time ISP1 (ether1-ISP1) uptime/downtime analytics, outage incident breakdown, and dynamic throughput monitoring for CoreRouter and HomeMikro.">
   
   <!-- PWA & Mobile Web App Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -21,7 +21,7 @@
   <meta http-equiv="Expires" content="0">
   
   <!-- CSS Stylesheets -->
-  <link rel="stylesheet" href="speedtest.css?v=20260823_range_cal">
+  <link rel="stylesheet" href="speedtest.css?v=20261106_isp1_uptime">
   
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -33,10 +33,10 @@
     <!-- Top Navigation Header -->
     <header class="top-nav">
       <div class="nav-brand">
-        <div class="brand-icon">⚡</div>
+        <img src="fleming_wifi_logo.png" alt="Fleming WiFi" class="brand-logo-img">
         <div class="brand-text">
-          <h1>Fleming WiFi Speedtest Monitor</h1>
-          <p>Continuous Dual-Device Performance Tracker &amp; SLA Monitor</p>
+          <h1>Fleming WiFi WAN &amp; Uptime Monitor</h1>
+          <p>ISP1 (ether1) Uptime/Downtime Tracker, Outage Breakdown &amp; Active Throughput</p>
         </div>
       </div>
       
@@ -46,40 +46,46 @@
           <span>Install App</span>
         </button>
 
-        <div class="status-pill">
-          <span class="pulse-dot"></span>
-          <span id="liveStatusText">Live Ingest Active</span>
+        <div class="status-pill" id="isp1HeaderPill">
+          <span class="pulse-dot" id="isp1HeaderDot"></span>
+          <span id="liveStatusText">Checking ISP1...</span>
         </div>
+
+        <button class="refresh-btn" id="btnRefreshNow" title="Check for latest router uploads now">
+          <span>🔄</span>
+          <span id="refreshBtnText">Sync</span>
+        </button>
       </div>
     </header>
 
     <!-- Live Real-Time Gauge Meters Section -->
     <section class="gauges-grid">
       
-      <!-- CoreRouter Live Gauge Card -->
-      <div class="glass-card gauge-card core-gauge">
+      <!-- CoreRouter Live Gauge Card (ether1-ISP1) -->
+      <div class="glass-card gauge-card core-gauge" id="coreGaugeCard">
         <div class="gauge-details">
           <div class="gauge-header">
-            <span class="device-badge badge-core">CoreRouter</span>
-            <span class="gauge-title">ISP WAN Throughput</span>
+            <span class="device-badge badge-core">CoreRouter • ether1-ISP1</span>
+            <span class="wan-state-pill online" id="coreWanStateBadge">🟢 ISP1 ONLINE</span>
           </div>
+          <div class="gauge-title" style="margin-top: 0.15rem;">Primary Fiber WAN (ISP1 Only)</div>
           
           <div class="gauge-speed-display">
             <span class="gauge-speed-val" id="coreLiveSpeed">---</span>
-            <span class="gauge-speed-unit">Mbps</span>
+            <span class="gauge-speed-unit" id="coreLiveUnit">Mbps</span>
           </div>
           
           <div class="gauge-meta">
             <div class="gauge-meta-item">
               <span>🕒</span>
-              <span id="coreLastTime">Awaiting live test...</span>
+              <span id="coreLastTime">Loading latest check...</span>
             </div>
             <div class="gauge-meta-item">
-              <span class="latency-pill" id="coreLatencyPill">⚡ 18 ms • 0% Loss</span>
+              <span class="latency-pill" id="coreLatencyPill">🛡️ 24h Uptime: --%</span>
             </div>
             <div class="gauge-meta-item">
-              <span>🌐</span>
-              <span id="coreTarget">Manila Cloudflare CDN</span>
+              <span>🚀</span>
+              <span id="coreTarget">0 Mbps = ISP1 Down (On Starlink)</span>
             </div>
           </div>
         </div>
@@ -89,6 +95,7 @@
             <path class="gauge-bg-arc" d="M 20 95 A 50 50 0 1 1 120 95" />
             <path class="gauge-fill-arc" id="coreGaugeArc" stroke="#38bdf8" stroke-dasharray="210" stroke-dashoffset="210" d="M 20 95 A 50 50 0 1 1 120 95" />
           </svg>
+          <div class="gauge-scale-label">1 Gbps Scale</div>
         </div>
       </div>
 
@@ -96,9 +103,10 @@
       <div class="glass-card gauge-card home-gauge">
         <div class="gauge-details">
           <div class="gauge-header">
-            <span class="device-badge badge-home">HomeMikro</span>
-            <span class="gauge-title">Backbone Transit</span>
+            <span class="device-badge badge-home">HomeMikro • vlan100</span>
+            <span class="wan-state-pill backbone" id="homeWanStateBadge">🟣 BACKBONE ACTIVE</span>
           </div>
+          <div class="gauge-title" style="margin-top: 0.15rem;">10G Fiber Backbone Transit</div>
           
           <div class="gauge-speed-display">
             <span class="gauge-speed-val" id="homeLiveSpeed">---</span>
@@ -108,14 +116,14 @@
           <div class="gauge-meta">
             <div class="gauge-meta-item">
               <span>🕒</span>
-              <span id="homeLastTime">Awaiting live test...</span>
+              <span id="homeLastTime">Loading latest check...</span>
             </div>
             <div class="gauge-meta-item">
               <span class="latency-pill" id="homeLatencyPill">⚡ 1 ms • 0% Loss</span>
             </div>
             <div class="gauge-meta-item">
               <span>🌐</span>
-              <span id="homeTarget">Backbone Multi-Stream</span>
+              <span id="homeTarget">Staggered :15 / :45 Schedule</span>
             </div>
           </div>
         </div>
@@ -125,41 +133,85 @@
             <path class="gauge-bg-arc" d="M 20 95 A 50 50 0 1 1 120 95" />
             <path class="gauge-fill-arc" id="homeGaugeArc" stroke="#c084fc" stroke-dasharray="210" stroke-dashoffset="210" d="M 20 95 A 50 50 0 1 1 120 95" />
           </svg>
+          <div class="gauge-scale-label">1 Gbps Scale</div>
         </div>
       </div>
 
     </section>
 
-    <!-- 24-Hour Hourly Congestion Heatmap Section -->
-    <section class="heatmap-section">
-      <div class="glass-card heatmap-card">
-        <div class="chart-header">
+    <!-- ISP1 Uptime & Outage Executive Summary Section -->
+    <section class="metrics-section">
+      <div class="glass-card">
+        <div class="chart-header" style="margin-bottom: 0.9rem;">
           <div>
             <div class="card-title">
-              <span>🔥</span> 24-Hour Peak Congestion Heatmap (Hourly Averages)
+              <span>🛡️</span> <span id="metricsSectionTitle">7-Day ISP1 (ether1) Uptime &amp; Outage Summary</span>
             </div>
-            <div class="chart-subtitle">Hourly throughput distribution highlighting peak congestion windows (7 PM - 11 PM) vs off-peak hours</div>
+            <div class="chart-subtitle">Tracks Primary Fiber (ether1-ISP1) availability. Dynamic ISP load scaling is normal; only 0 Mbps indicates an ISP1 outage.</div>
           </div>
         </div>
+        
+        <div class="metrics-grid">
+          
+          <!-- Metric 1: ISP1 Uptime % -->
+          <div class="metric-card">
+            <div class="metric-icon-box icon-uptime">🛡️</div>
+            <div class="metric-info" style="width: 100%;">
+              <span class="metric-label" id="metricUptimeLabel">ISP1 (ether1) Uptime</span>
+              <span class="metric-value" id="metricCompliance">100%</span>
+              <div class="compliance-bar-container">
+                <div class="compliance-bar-fill" id="metricComplianceFill" style="width: 100%;"></div>
+              </div>
+              <span class="metric-sub" id="metricComplianceSub">100% Online • 0% Down</span>
+            </div>
+          </div>
 
-        <div class="heatmap-grid" id="heatmapGrid">
-          <!-- 24 Hourly Cells JS Rendered Here -->
+          <!-- Metric 2: Total ISP1 Downtime -->
+          <div class="metric-card">
+            <div class="metric-icon-box icon-outage">🚨</div>
+            <div class="metric-info">
+              <span class="metric-label">ISP1 Total Downtime (0 Mbps)</span>
+              <span class="metric-value" id="metricOutage">0 mins</span>
+              <span class="metric-sub" id="metricOutageSub">0 failed 30-min check intervals</span>
+            </div>
+          </div>
+
+          <!-- Metric 3: Outage Incidents & Longest Drop -->
+          <div class="metric-card">
+            <div class="metric-icon-box icon-slow">📉</div>
+            <div class="metric-info">
+              <span class="metric-label">Outage Episodes (ether1)</span>
+              <span class="metric-value" id="metricSlowSpeed">0 incidents</span>
+              <span class="metric-sub" id="metricIncidentSub">Longest outage: 0 mins</span>
+            </div>
+          </div>
+
+          <!-- Metric 4: Active Speed (Avg & Peak) -->
+          <div class="metric-card">
+            <div class="metric-icon-box icon-avg">⚡</div>
+            <div class="metric-info">
+              <span class="metric-label" id="metricAvgSpeedLabel">ISP1 Active Speed (Avg / Peak)</span>
+              <span class="metric-value" id="metricAvgSpeed">--- Mbps</span>
+              <span class="metric-sub" id="metricAvgSpeedSub">Scales dynamically up to 1 Gbps with load</span>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
 
-    <!-- Top Grid: Graphical Calendar + 7-Day Chart -->
+    <!-- Top Grid: Graphical Calendar + Adaptive Trend Chart -->
     <section class="top-grid">
       
       <!-- Graphical Calendar & Day Navigator Card -->
       <div class="glass-card calendar-card">
         <div class="card-title">
-          <span>📅</span> Date Navigator &amp; Calendar
+          <span>📅</span> Date Navigator &amp; Outage Calendar
         </div>
         
         <div class="calendar-controls">
           <button class="btn-icon" id="prevMonthBtn" title="Previous Month">◄</button>
-          <div class="calendar-month-year" id="calMonthYear">August 2026</div>
+          <div class="calendar-month-year" id="calMonthYear">November 2026</div>
           <button class="btn-icon" id="nextMonthBtn" title="Next Month">►</button>
         </div>
         
@@ -168,11 +220,16 @@
           <button class="btn-pill" id="btnToday">Today</button>
           <button class="btn-pill" id="btnYesterday">Yesterday</button>
           <button class="btn-pill" id="btnNextDay">Next ►</button>
-          <button class="btn-pill" id="btnResetRange" title="Reset to default 7-day range">🔄 Reset</button>
+          <button class="btn-pill" id="btnResetRange" title="Reset to default 7-day range">🔄 7d</button>
         </div>
         
         <div class="calendar-grid" id="calGrid">
           <!-- Calendar Days JS Rendered Here -->
+        </div>
+
+        <div class="cal-legend-row">
+          <span class="cal-legend-item"><span class="cal-dot green"></span> 100% ISP1 Up</span>
+          <span class="cal-legend-item"><span class="cal-dot red"></span> Had ISP1 Outage (0 Mbps)</span>
         </div>
         
         <div class="selected-day-badge" id="selectedDayText">
@@ -185,15 +242,15 @@
         <div class="chart-header">
           <div>
             <div class="card-title">
-              <span>📈</span> <span id="chartTitle">7-Day Speed Trend (30-Min Averages)</span>
+              <span>📈</span> <span id="chartTitle">7-Day ISP1 Throughput &amp; Outage Trend</span>
             </div>
-            <div class="chart-subtitle" id="chartSubtitle">Aggregated in 30-minute increments across 7 days for fast, lightweight rendering</div>
+            <div class="chart-subtitle" id="chartSubtitle">Red markers on CoreRouter indicate 0 Mbps ISP1 (ether1) outage intervals</div>
           </div>
           <div class="chart-range-controls" id="chartRangeControls">
-            <button class="range-btn" data-range="24h">24h (15m)</button>
+            <button class="range-btn" data-range="24h">24h (30m)</button>
             <button class="range-btn active" data-range="7d">7d (30m)</button>
             <button class="range-btn" data-range="14d">14d (1h)</button>
-            <button class="range-btn" data-range="30d">30d (4h)</button>
+            <button class="range-btn" data-range="30d">30d (2h)</button>
             <button class="range-btn" id="btnResetChart" title="Reset to default 7-day range">🔄 Reset</button>
           </div>
         </div>
@@ -201,94 +258,86 @@
         <div class="chart-wrapper">
           <canvas id="speedTrendChart"></canvas>
         </div>
+
+        <!-- Visual ISP1 Availability Timeline Ribbon -->
+        <div class="uptime-ribbon-wrap">
+          <div class="uptime-ribbon-header">
+            <span class="uptime-ribbon-title">ISP1 (ether1) Availability Timeline across Selected Range</span>
+            <span class="uptime-ribbon-meta" id="uptimeRibbonMeta">100% Online</span>
+          </div>
+          <div class="uptime-ribbon-bar" id="uptimeRibbonBar">
+            <!-- JS rendered slices -->
+          </div>
+        </div>
       </div>
       
     </section>
 
-    <!-- Middle Section: 7-Day Executive Analysis & Metrics -->
-    <section class="metrics-section">
-      <div class="glass-card">
-        <div class="card-title" style="margin-bottom: 0.85rem;">
-          <span>📊</span> <span id="metricsSectionTitle">7-Day Executive Summary &amp; SLA Performance Analysis</span>
+    <!-- NEW: Dedicated ISP1 (ether1) Outage Breakdown & Incident Log -->
+    <section class="outage-breakdown-section">
+      <div class="glass-card outage-card">
+        <div class="chart-header">
+          <div>
+            <div class="card-title">
+              <span>🚨</span> <span id="outageSectionTitle">ISP1 (ether1-ISP1) Outage Breakdown &amp; Incident Log</span>
+            </div>
+            <div class="chart-subtitle">Every period where CoreRouter recorded 0 Mbps on ether1-ISP1 (traffic failed over to Starlink backup or WAN offline)</div>
+          </div>
+          <div class="chart-range-controls">
+            <button class="range-btn active" id="btnOutageScopeRange">Selected Range</button>
+            <button class="range-btn" id="btnOutageScopeAll">All Outages (Last 30d)</button>
+          </div>
         </div>
-        
-        <div class="metrics-grid">
-          
-          <!-- Metric 1: Average Speed -->
-          <div class="metric-card">
-            <div class="metric-icon-box icon-avg">⚡</div>
-            <div class="metric-info">
-              <span class="metric-label" id="metricAvgSpeedLabel">7-Day Average Speed</span>
-              <span class="metric-value" id="metricAvgSpeed">--- Mbps</span>
-              <span class="metric-sub">Across all recorded tests</span>
-            </div>
-          </div>
 
-          <!-- Metric 2: Slow Speeds (< 200 MBPS) -->
-          <div class="metric-card">
-            <div class="metric-icon-box icon-slow">⚠️</div>
-            <div class="metric-info">
-              <span class="metric-label">Slow Speeds (&lt; 200 Mbps)</span>
-              <span class="metric-value" id="metricSlowSpeed">0.0 hrs</span>
-              <span class="metric-sub">Duration below 200 Mbps threshold</span>
-            </div>
-          </div>
+        <div id="outageSummaryBanner" class="outage-summary-banner"></div>
 
-          <!-- Metric 3: Outage Tracker (0 MBPS) -->
-          <div class="metric-card">
-            <div class="metric-icon-box icon-outage">🚨</div>
-            <div class="metric-info">
-              <span class="metric-label">Outage Duration (0 Mbps)</span>
-              <span class="metric-value" id="metricOutage">0 mins</span>
-              <span class="metric-sub">Complete throughput loss events</span>
-            </div>
-          </div>
-
-          <!-- Metric 4: Service Compliance Ratio -->
-          <div class="metric-card">
-            <div class="metric-icon-box icon-uptime">🛡️</div>
-            <div class="metric-info" style="width: 100%;">
-              <span class="metric-label">Uptime Compliance (≥ 200 Mbps)</span>
-              <span class="metric-value" id="metricCompliance">100%</span>
-              <div class="compliance-bar-container">
-                <div class="compliance-bar-fill" id="metricComplianceFill" style="width: 100%;"></div>
-              </div>
-              <span class="metric-sub" id="metricComplianceSub">100% ≥ 200Mbps | 0% &lt; 200Mbps</span>
-            </div>
-          </div>
-
+        <div class="table-scroll-container" style="max-height: 360px;">
+          <table class="log-table outage-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Outage Start (PHT)</th>
+                <th>Restored / Last Check (PHT)</th>
+                <th>Estimated Duration</th>
+                <th>0 Mbps Checks</th>
+                <th>Post-Recovery Speed</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyOutageBreakdown">
+              <!-- Outage Episodes JS Rendered -->
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
 
-    <!-- Legend Box & Speed Scale Explanation -->
-    <div class="legend-card">
-      <div style="display: flex; align-items: center; gap: 0.5rem;">
-        <strong style="color: #ffffff;">Color Coding Legend:</strong>
-        <span>Dynamic HSL Speed Scale based on 200 Mbps threshold</span>
+    <!-- 24-Hour Hourly Availability & Active Usage Profile -->
+    <section class="heatmap-section">
+      <div class="glass-card heatmap-card">
+        <div class="chart-header">
+          <div>
+            <div class="card-title">
+              <span>⏱️</span> 24-Hour ISP1 Availability &amp; Active Load Profile (Manila PHT)
+            </div>
+            <div class="chart-subtitle">Shows average active throughput by hour of day. Higher speeds reflect high customer demand; red cells indicate hours with ISP1 outages.</div>
+          </div>
+        </div>
+
+        <div class="heatmap-grid" id="heatmapGrid">
+          <!-- 24 Hourly Cells JS Rendered Here -->
+        </div>
       </div>
-      
-      <div class="legend-scale">
-        <span>0 Mbps</span>
-        <div class="gradient-bar red-scale" title="Under 200 MBPS: More Red closer to 0, Muted Red near 200"></div>
-        <span style="color: #ef4444; font-weight: 600;">&lt; 200 Mbps (Red)</span>
-        
-        <span style="margin-left: 0.5rem;">200 Mbps</span>
-        <div class="gradient-bar green-scale" title="200 MBPS and above: Muted Green near 200, Lush Emerald Green closer to 1 Gbps"></div>
-        <span style="color: #34d399; font-weight: 600;">≥ 200 Mbps (Green)</span>
-        <span>1 Gbps</span>
-      </div>
-    </div>
+    </section>
 
     <!-- Dual Tables Section: CoreRouter & HomeMikro -->
     <section class="tables-section">
       
       <div class="tables-header">
         <div class="card-title">
-          <span>📋</span> Dual Synchronized Speedtest Log Tables
+          <span>📋</span> Dual Synchronized Speedtest &amp; Outage Log Tables
         </div>
         <div class="sync-badge">
-          <span>🔗</span> Synchronized Table Scroll Enabled
+          <span>🔗</span> Staggered 15-Min Router Uploads (:00/:30 Core • :15/:45 Home)
         </div>
       </div>
 
@@ -299,17 +348,18 @@
           <div class="device-header">
             <div class="device-title-box">
               <span class="device-chip chip-core">CoreRouter</span>
-              <strong style="font-size: 0.95rem;">Core Network Router Speed Logs</strong>
+              <strong style="font-size: 0.95rem;">ISP1 (ether1-ISP1) WAN Logs</strong>
             </div>
+            <span class="table-count-badge" id="coreTableCount">0 logs</span>
           </div>
           
           <div class="table-scroll-container" id="scrollContainerCore">
             <table class="log-table">
               <thead>
                 <tr>
-                  <th>Timestamp (Human Readable)</th>
-                  <th>Speed (Mbps)</th>
-                  <th>Target Server</th>
+                  <th>Timestamp (Manila PHT)</th>
+                  <th>ISP1 Speed / State</th>
+                  <th>Interface</th>
                 </tr>
               </thead>
               <tbody id="tbodyCoreRouter">
@@ -324,17 +374,18 @@
           <div class="device-header">
             <div class="device-title-box">
               <span class="device-chip chip-home">HomeMikro</span>
-              <strong style="font-size: 0.95rem;">Home MikroTik Speed &amp; Backbone Logs</strong>
+              <strong style="font-size: 0.95rem;">Backbone (vlan100) Transit Logs</strong>
             </div>
+            <span class="table-count-badge" id="homeTableCount">0 logs</span>
           </div>
           
           <div class="table-scroll-container" id="scrollContainerHome">
             <table class="log-table">
               <thead>
                 <tr>
-                  <th>Timestamp (Human Readable)</th>
-                  <th>Speed (Mbps)</th>
-                  <th>Target / Backbone Test</th>
+                  <th>Timestamp (Manila PHT)</th>
+                  <th>Throughput</th>
+                  <th>Interface</th>
                 </tr>
               </thead>
               <tbody id="tbodyHomeMikro">
@@ -350,6 +401,6 @@
   </div>
 
   <!-- Dashboard JavaScript -->
-  <script src="speedtest.js?v=20260823_range_final3"></script>
+  <script src="speedtest.js?v=20261106_isp1_uptime"></script>
 </body>
 </html>
