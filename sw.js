@@ -1,5 +1,5 @@
 // Fleming WiFi PWA Service Worker
-const CACHE_NAME = 'fleming-wifi-cache-v1';
+const CACHE_NAME = 'fleming-wifi-cache-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

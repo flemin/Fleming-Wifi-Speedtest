@@ -212,11 +212,11 @@ async function syncLatestNetworkLogs(isManualRefresh = false) {
   let addedAny = false;
   const cb = Math.floor(Date.now() / 60000); // 1-minute cache bucket
 
-  // 1. Load compiled logs_index.json (single compressed request)
+  // 1. Load compiled logs_index.json (single compressed request; raw GitHub first for zero Pages CDN delay)
   try {
-    let res = await fetch(`Device Speedtest Logs/logs_index.json?v=${cb}`);
+    let res = await fetch(`https://raw.githubusercontent.com/flemin/Fleming-Wifi-Speedtest/main/Device%20Speedtest%20Logs/logs_index.json?v=${cb}`);
     if (!res.ok) {
-      res = await fetch(`https://raw.githubusercontent.com/flemin/Fleming-Wifi-Speedtest/main/Device%20Speedtest%20Logs/logs_index.json?v=${cb}`);
+      res = await fetch(`Device Speedtest Logs/logs_index.json?v=${cb}`);
     }
     if (res.ok) {
       let rawText = await res.text();
